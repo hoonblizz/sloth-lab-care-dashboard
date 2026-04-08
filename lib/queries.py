@@ -26,7 +26,7 @@ def _date_params(start: date, end: date) -> dict:
 
 @st.cache_data(ttl=300)
 def get_overview_kpis(exclude_user_ids: tuple[str, ...] = ()) -> dict:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_overview_kpis", params)
     return rows[0] if rows else {}
 
@@ -38,22 +38,21 @@ def get_overview_kpis(exclude_user_ids: tuple[str, ...] = ()) -> dict:
 @st.cache_data(ttl=300)
 def get_user_growth(start: date, end: date, exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
     params = {**_date_params(start, end)}
-    if exclude_user_ids:
-        params["p_exclude_user_ids"] = list(exclude_user_ids)
+    params["p_exclude_user_ids"] = list(exclude_user_ids)
     rows = rpc("analytics_user_growth", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
 @st.cache_data(ttl=1800)
 def get_signup_methods(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_signup_methods", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
 @st.cache_data(ttl=1800)
 def get_platform_distribution(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_platform_distribution", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
@@ -64,14 +63,14 @@ def get_platform_distribution(exclude_user_ids: tuple[str, ...] = ()) -> pd.Data
 
 @st.cache_data(ttl=300)
 def get_tier_distribution(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_tier_distribution", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
 @st.cache_data(ttl=1800)
 def get_trial_conversion(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_trial_conversion", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
@@ -79,22 +78,21 @@ def get_trial_conversion(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame
 @st.cache_data(ttl=300)
 def get_mrr_trend(start: date, end: date, exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
     params = {**_date_params(start, end)}
-    if exclude_user_ids:
-        params["p_exclude_user_ids"] = list(exclude_user_ids)
+    params["p_exclude_user_ids"] = list(exclude_user_ids)
     rows = rpc("analytics_mrr_trend", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
 @st.cache_data(ttl=300)
 def get_churn_reasons(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_churn_reasons", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
 @st.cache_data(ttl=300)
 def get_subscription_lifecycle(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_subscription_lifecycle", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
@@ -105,34 +103,31 @@ def get_subscription_lifecycle(exclude_user_ids: tuple[str, ...] = ()) -> pd.Dat
 
 @st.cache_data(ttl=300)
 def get_dau_wau_mau(target: date | None = None, exclude_user_ids: tuple[str, ...] = ()) -> dict:
-    params = {}
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     if target:
         params["p_target_date"] = target.isoformat()
-    if exclude_user_ids:
-        params["p_exclude_user_ids"] = list(exclude_user_ids)
-    rows = rpc("analytics_dau_wau_mau", params or None)
+    rows = rpc("analytics_dau_wau_mau", params)
     return rows[0] if rows else {}
 
 
 @st.cache_data(ttl=300)
 def get_dau_trend(start: date, end: date, exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
     params = {**_date_params(start, end)}
-    if exclude_user_ids:
-        params["p_exclude_user_ids"] = list(exclude_user_ids)
+    params["p_exclude_user_ids"] = list(exclude_user_ids)
     rows = rpc("analytics_dau_trend", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
 @st.cache_data(ttl=1800)
 def get_retention_cohort(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_retention_cohort", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
 @st.cache_data(ttl=1800)
 def get_feature_adoption(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_feature_adoption", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
@@ -140,8 +135,7 @@ def get_feature_adoption(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame
 @st.cache_data(ttl=300)
 def get_weekly_response_rate(start: date, end: date, exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
     params = {**_date_params(start, end)}
-    if exclude_user_ids:
-        params["p_exclude_user_ids"] = list(exclude_user_ids)
+    params["p_exclude_user_ids"] = list(exclude_user_ids)
     rows = rpc("analytics_weekly_response_rate", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
@@ -153,8 +147,7 @@ def get_weekly_response_rate(start: date, end: date, exclude_user_ids: tuple[str
 @st.cache_data(ttl=300)
 def get_daily_checkups(start: date, end: date, exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
     params = {**_date_params(start, end)}
-    if exclude_user_ids:
-        params["p_exclude_user_ids"] = list(exclude_user_ids)
+    params["p_exclude_user_ids"] = list(exclude_user_ids)
     rows = rpc("analytics_daily_checkups", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
@@ -162,8 +155,7 @@ def get_daily_checkups(start: date, end: date, exclude_user_ids: tuple[str, ...]
 @st.cache_data(ttl=300)
 def get_checkup_type_stats(start: date, end: date, exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
     params = {**_date_params(start, end)}
-    if exclude_user_ids:
-        params["p_exclude_user_ids"] = list(exclude_user_ids)
+    params["p_exclude_user_ids"] = list(exclude_user_ids)
     rows = rpc("analytics_checkup_type_stats", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
@@ -171,8 +163,7 @@ def get_checkup_type_stats(start: date, end: date, exclude_user_ids: tuple[str, 
 @st.cache_data(ttl=300)
 def get_retry_stats(start: date, end: date, exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
     params = {**_date_params(start, end)}
-    if exclude_user_ids:
-        params["p_exclude_user_ids"] = list(exclude_user_ids)
+    params["p_exclude_user_ids"] = list(exclude_user_ids)
     rows = rpc("analytics_retry_stats", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
@@ -201,14 +192,14 @@ def get_opt_out_count(exclude_user_ids: tuple[str, ...] = ()) -> int:
 
 @st.cache_data(ttl=300)
 def get_funnel_snapshot(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_funnel_snapshot", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
 @st.cache_data(ttl=1800)
 def get_time_to_first_action(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_time_to_first_action", params)
     if not rows:
         return pd.DataFrame()
@@ -222,42 +213,42 @@ def get_time_to_first_action(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataF
 
 @st.cache_data(ttl=1800)
 def get_recipient_geography(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_recipient_geography", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
 @st.cache_data(ttl=300)
 def get_checkup_timing(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_checkup_timing", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
 @st.cache_data(ttl=300)
 def get_user_health(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_user_health", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
 @st.cache_data(ttl=300)
 def get_inactive_users(exclude_user_ids: tuple[str, ...] = ()) -> dict:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_inactive_users", params)
     return rows[0] if rows else {}
 
 
 @st.cache_data(ttl=300)
 def get_user_engagement_segments(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_user_engagement_segments", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
 @st.cache_data(ttl=300)
 def get_response_latency(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
-    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    params = {"p_exclude_user_ids": list(exclude_user_ids)}
     rows = rpc("analytics_response_latency", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
