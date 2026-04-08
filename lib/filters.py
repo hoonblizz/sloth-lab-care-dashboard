@@ -1,5 +1,7 @@
 """Data filters — internal account exclusion & pre-launch date filtering."""
 
+from __future__ import annotations
+
 from datetime import date
 
 import pandas as pd

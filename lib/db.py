@@ -1,5 +1,7 @@
 """Supabase connection and authentication for the analytics dashboard."""
 
+from __future__ import annotations
+
 import os
 
 import streamlit as st

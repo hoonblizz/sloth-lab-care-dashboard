@@ -1,5 +1,7 @@
 """Query functions — wraps RPC calls, returns DataFrames with caching."""
 
+from __future__ import annotations
+
 from datetime import date, timedelta
 
 import pandas as pd
