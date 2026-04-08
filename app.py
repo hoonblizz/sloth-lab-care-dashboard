@@ -4,11 +4,11 @@ Sloth Care (ChecKin) — Marketing Analytics Dashboard
 Usage (local):
     pip install -r requirements.txt
     cp .env.example .env   # fill in real values
-    streamlit run app.py
+    streamlit run analytics_dashboard.py
 
 Deployment:
     Streamlit Community Cloud — connect GitHub repo,
-    set main file path to app.py,
+    set main file path to scripts/analytics/analytics_dashboard.py,
     configure secrets in the Streamlit Cloud dashboard.
 """
 
@@ -23,7 +23,7 @@ from lib.db import check_password
 from lib.queries import get_overview_kpis, get_daily_checkups
 from lib.charts import line_chart, stacked_bar_chart, COLORS
 from lib.i18n import t, sidebar_language_toggle, inject_custom_css
-from lib.filters import sidebar_filters, aggregated_data_note
+from lib.filters import sidebar_filters, get_internal_user_ids
 
 # ---------------------------------------------------------------------------
 # Page config
@@ -50,7 +50,8 @@ sidebar_filters()
 st.title(t("overview_title"))
 st.caption(t("overview_subtitle"))
 
-kpis = get_overview_kpis()
+exclude_ids = tuple(get_internal_user_ids()) if st.session_state.get("exclude_internal") else ()
+kpis = get_overview_kpis(exclude_user_ids=exclude_ids)
 
 if not kpis:
     st.warning(t("no_kpi_data"))
@@ -81,8 +82,6 @@ c3.metric(t("checkups_today"), today_total,
 resp_rate = round(today_resp / today_total * 100, 1) if today_total else 0
 c4.metric(t("response_rate_today"), f"{resp_rate}%",
           help=t("desc_response_rate_today"))
-
-aggregated_data_note()
 
 # ---------------------------------------------------------------------------
 # Recent check-up trend (last 14 days)

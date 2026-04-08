@@ -23,8 +23,9 @@ def _date_params(start: date, end: date) -> dict:
 # ---------------------------------------------------------------------------
 
 @st.cache_data(ttl=300)
-def get_overview_kpis() -> dict:
-    rows = rpc("analytics_overview_kpis")
+def get_overview_kpis(exclude_user_ids: tuple[str, ...] = ()) -> dict:
+    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    rows = rpc("analytics_overview_kpis", params)
     return rows[0] if rows else {}
 
 
@@ -144,8 +145,9 @@ def get_opt_out_count() -> int:
 # ---------------------------------------------------------------------------
 
 @st.cache_data(ttl=300)
-def get_funnel_snapshot() -> pd.DataFrame:
-    rows = rpc("analytics_funnel_snapshot")
+def get_funnel_snapshot(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
+    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    rows = rpc("analytics_funnel_snapshot", params)
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 

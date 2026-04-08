@@ -14,7 +14,7 @@ from lib.queries import (
 )
 from lib.charts import funnel_chart, histogram, COLORS
 from lib.i18n import t, inject_custom_css
-from lib.filters import filter_df_by_user_id, aggregated_data_note
+from lib.filters import filter_df_by_user_id, get_internal_user_ids
 
 check_password()
 inject_custom_css()
@@ -28,7 +28,8 @@ sidebar_date_filter()  # consistent sidebar
 
 st.subheader(t("user_journey"))
 
-df_funnel = get_funnel_snapshot()
+exclude_ids = tuple(get_internal_user_ids()) if st.session_state.get("exclude_internal") else ()
+df_funnel = get_funnel_snapshot(exclude_user_ids=exclude_ids)
 
 if not df_funnel.empty:
     fig = funnel_chart(df_funnel, stage_col="stage", value_col="user_count",
@@ -57,8 +58,6 @@ if not df_funnel.empty:
     )
 else:
     st.info(t("no_funnel_data"))
-
-aggregated_data_note()
 
 # ---------------------------------------------------------------------------
 # Time to first action

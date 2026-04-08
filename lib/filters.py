@@ -66,7 +66,7 @@ def filter_df_by_user_id(
     if user_id_col not in df.columns or df.empty:
         return df
 
-    internal_ids = _get_internal_user_ids()
+    internal_ids = get_internal_user_ids()
     if not internal_ids:
         return df
     return df[~df[user_id_col].isin(internal_ids)].reset_index(drop=True)
@@ -108,7 +108,7 @@ def aggregated_data_note() -> None:
 # ---------------------------------------------------------------------------
 
 @st.cache_data(ttl=1800)
-def _get_internal_user_ids() -> list[str]:
+def get_internal_user_ids() -> list[str]:
     """Look up user IDs for internal email addresses."""
     try:
         from lib.db import get_client
