@@ -6,6 +6,8 @@ import pandas as pd
 import streamlit as st
 
 from lib.db import rpc, get_client
+from lib.i18n import t, sidebar_language_toggle
+from lib.filters import sidebar_filters, get_min_date
 
 
 # ---------------------------------------------------------------------------
@@ -158,29 +160,80 @@ def get_time_to_first_action() -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
+# Marketing
+# ---------------------------------------------------------------------------
+
+@st.cache_data(ttl=1800)
+def get_recipient_geography() -> pd.DataFrame:
+    rows = rpc("analytics_recipient_geography")
+    return pd.DataFrame(rows) if rows else pd.DataFrame()
+
+
+@st.cache_data(ttl=300)
+def get_checkup_timing() -> pd.DataFrame:
+    rows = rpc("analytics_checkup_timing")
+    return pd.DataFrame(rows) if rows else pd.DataFrame()
+
+
+@st.cache_data(ttl=300)
+def get_user_health() -> pd.DataFrame:
+    rows = rpc("analytics_user_health")
+    return pd.DataFrame(rows) if rows else pd.DataFrame()
+
+
+@st.cache_data(ttl=300)
+def get_inactive_users() -> dict:
+    rows = rpc("analytics_inactive_users")
+    return rows[0] if rows else {}
+
+
+@st.cache_data(ttl=300)
+def get_user_engagement_segments() -> pd.DataFrame:
+    rows = rpc("analytics_user_engagement_segments")
+    return pd.DataFrame(rows) if rows else pd.DataFrame()
+
+
+@st.cache_data(ttl=300)
+def get_response_latency() -> pd.DataFrame:
+    rows = rpc("analytics_response_latency")
+    return pd.DataFrame(rows) if rows else pd.DataFrame()
+
+
+# ---------------------------------------------------------------------------
 # Sidebar date filter (shared)
 # ---------------------------------------------------------------------------
 
 def sidebar_date_filter(default_days: int = 30) -> tuple[date, date]:
-    """Render a date range picker in the sidebar, return (start, end)."""
-    st.sidebar.header("Filters")
-    preset = st.sidebar.selectbox(
-        "Date Range",
-        ["Last 7 days", "Last 30 days", "Last 90 days", "All time", "Custom"],
-        index=1,
-    )
-    today = date.today()
+    """Render language toggle, filter checkboxes, and date picker in sidebar."""
+    sidebar_language_toggle()
+    sidebar_filters()
 
-    if preset == "Last 7 days":
-        start, end = today - timedelta(days=7), today
-    elif preset == "Last 30 days":
-        start, end = today - timedelta(days=30), today
-    elif preset == "Last 90 days":
-        start, end = today - timedelta(days=90), today
-    elif preset == "All time":
-        start, end = date(2026, 1, 1), today
+    st.sidebar.header(t("filters"))
+
+    presets = [
+        t("last_7_days"),
+        t("last_30_days"),
+        t("last_90_days"),
+        t("all_time"),
+        t("custom"),
+    ]
+    preset = st.sidebar.selectbox(t("date_range"), presets, index=1)
+    today = date.today()
+    min_date = get_min_date()
+
+    if preset == presets[0]:  # Last 7 days
+        start, end = max(today - timedelta(days=7), min_date), today
+    elif preset == presets[1]:  # Last 30 days
+        start, end = max(today - timedelta(days=30), min_date), today
+    elif preset == presets[2]:  # Last 90 days
+        start, end = max(today - timedelta(days=90), min_date), today
+    elif preset == presets[3]:  # All time
+        start, end = min_date, today
     else:
-        start = st.sidebar.date_input("Start", today - timedelta(days=default_days))
-        end = st.sidebar.date_input("End", today)
+        start = st.sidebar.date_input(
+            t("start"), max(today - timedelta(days=default_days), min_date),
+            min_value=min_date,
+        )
+        end = st.sidebar.date_input(t("end"), today, min_value=min_date)
 
     return start, end

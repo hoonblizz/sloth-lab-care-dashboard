@@ -28,7 +28,7 @@ PALETTE = [
 
 _LAYOUT_DEFAULTS = dict(
     template="plotly_white",
-    font=dict(family="Inter, system-ui, sans-serif", size=12),
+    font=dict(family="Inter, system-ui, sans-serif", size=14),
     margin=dict(l=40, r=20, t=40, b=40),
     height=380,
 )
@@ -166,6 +166,37 @@ def histogram(
     return _apply_layout(fig, title=title, xaxis_title=xaxis_title, yaxis_title="Count")
 
 
+def timing_heatmap(
+    df: pd.DataFrame,
+    x: str,
+    y: str,
+    z: str,
+    title: str = "",
+) -> go.Figure:
+    """Day-of-week × hour heatmap for response rate analysis."""
+    pivot = df.pivot_table(index=y, columns=x, values=z, aggfunc="first")
+    # Sort days: Sun=0 .. Sat=6
+    day_order = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    pivot = pivot.reindex(index=[d for d in day_order if d in pivot.index])
+
+    fig = go.Figure(go.Heatmap(
+        z=pivot.values,
+        x=[f"{h}:00" for h in pivot.columns],
+        y=pivot.index,
+        colorscale=[
+            [0.0, "#f7f7f7"],
+            [0.5, COLORS["accent"]],
+            [1.0, COLORS["primary"]],
+        ],
+        text=pivot.values,
+        texttemplate="%{text:.0f}%",
+        textfont=dict(size=12),
+        hoverongaps=False,
+        colorbar=dict(title="%"),
+    ))
+    return _apply_layout(fig, title=title, height=300)
+
+
 def heatmap_table(
     df: pd.DataFrame,
     title: str = "",
@@ -175,14 +206,14 @@ def heatmap_table(
         header=dict(
             values=list(df.columns),
             fill_color=COLORS["primary"],
-            font=dict(color="white", size=12),
+            font=dict(color="white", size=14),
             align="center",
         ),
         cells=dict(
             values=[df[col] for col in df.columns],
             fill_color="white",
             align="center",
-            font=dict(size=11),
+            font=dict(size=13),
         ),
     ))
     return _apply_layout(fig, title=title, height=min(400, 60 + 30 * len(df)))

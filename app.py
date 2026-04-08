@@ -4,11 +4,11 @@ Sloth Care (ChecKin) — Marketing Analytics Dashboard
 Usage (local):
     pip install -r requirements.txt
     cp .env.example .env   # fill in real values
-    streamlit run analytics_dashboard.py
+    streamlit run app.py
 
 Deployment:
     Streamlit Community Cloud — connect GitHub repo,
-    set main file path to scripts/analytics/analytics_dashboard.py,
+    set main file path to app.py,
     configure secrets in the Streamlit Cloud dashboard.
 """
 
@@ -20,8 +20,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import streamlit as st
 from lib.db import check_password
-from lib.queries import get_overview_kpis, get_daily_checkups, sidebar_date_filter
+from lib.queries import get_overview_kpis, get_daily_checkups
 from lib.charts import line_chart, stacked_bar_chart, COLORS
+from lib.i18n import t, sidebar_language_toggle, inject_custom_css
+from lib.filters import sidebar_filters, aggregated_data_note
 
 # ---------------------------------------------------------------------------
 # Page config
@@ -35,44 +37,59 @@ st.set_page_config(
 )
 
 check_password()
+inject_custom_css()
+
+# Sidebar — language + filters (no date picker on overview)
+sidebar_language_toggle()
+sidebar_filters()
 
 # ---------------------------------------------------------------------------
 # Overview
 # ---------------------------------------------------------------------------
 
-st.title("ChecKin — Marketing Analytics")
-st.caption("Overview Dashboard")
+st.title(t("overview_title"))
+st.caption(t("overview_subtitle"))
 
 kpis = get_overview_kpis()
 
 if not kpis:
-    st.warning("No data available. Ensure analytics SQL functions are deployed.")
+    st.warning(t("no_kpi_data"))
     st.stop()
 
 # KPI row 1 — Users & Revenue
 c1, c2, c3, c4 = st.columns(4)
-c1.metric("Total Users", f"{kpis.get('total_users', 0):,}",
-          delta=f"+{kpis.get('new_users_this_week', 0)} this week")
-c2.metric("Premium", kpis.get("premium_users", 0))
-c3.metric("MRR", f"${kpis.get('mrr', 0):,.2f}")
-c4.metric("Conversion", f"{kpis.get('trial_conversion_rate', 0)}%")
+c1.metric(t("total_users"), f"{kpis.get('total_users', 0):,}",
+          delta=f"+{kpis.get('new_users_this_week', 0)} this week",
+          help=t("desc_total_users"))
+c2.metric(t("premium"), kpis.get("premium_users", 0),
+          help=t("desc_premium"))
+c3.metric(t("mrr"), f"${kpis.get('mrr', 0):,.2f}",
+          help=t("desc_mrr"))
+c4.metric(t("conversion"), f"{kpis.get('trial_conversion_rate', 0)}%",
+          help=t("desc_conversion"))
 
 # KPI row 2 — Operations
 c1, c2, c3, c4 = st.columns(4)
-c1.metric("Monthly Subs", kpis.get("monthly_subscribers", 0))
-c2.metric("Annual Subs", kpis.get("annual_subscribers", 0))
+c1.metric(t("monthly_subs"), kpis.get("monthly_subscribers", 0),
+          help=t("desc_monthly_subs"))
+c2.metric(t("annual_subs"), kpis.get("annual_subscribers", 0),
+          help=t("desc_annual_subs"))
 today_total = kpis.get("total_checkups_today", 0)
 today_resp = kpis.get("responded_today", 0)
-c3.metric("Check-ups Today", today_total)
+c3.metric(t("checkups_today"), today_total,
+          help=t("desc_checkups_today"))
 resp_rate = round(today_resp / today_total * 100, 1) if today_total else 0
-c4.metric("Response Rate Today", f"{resp_rate}%")
+c4.metric(t("response_rate_today"), f"{resp_rate}%",
+          help=t("desc_response_rate_today"))
+
+aggregated_data_note()
 
 # ---------------------------------------------------------------------------
 # Recent check-up trend (last 14 days)
 # ---------------------------------------------------------------------------
 
 st.divider()
-st.subheader("Check-up Trend (Last 14 Days)")
+st.subheader(t("checkup_trend_title"))
 
 from datetime import date, timedelta
 
@@ -85,7 +102,7 @@ if not df_checkups.empty:
         fig = stacked_bar_chart(
             df_checkups, x="day",
             y_cols=["responded", "sent", "failed", "pending"],
-            title="Daily Check-ups by Status",
+            title=t("daily_checkups_status"),
             colors=[COLORS["secondary"], COLORS["info"], COLORS["danger"], COLORS["muted"]],
         )
         st.plotly_chart(fig, use_container_width=True)
@@ -99,18 +116,15 @@ if not df_checkups.empty:
         ).round(1)
         fig = line_chart(
             df_checkups, x="day", y="response_rate",
-            title="Daily Response Rate (%)",
+            title=t("daily_response_rate"),
         )
         st.plotly_chart(fig, use_container_width=True)
 else:
-    st.info("No check-up data available yet.")
+    st.info(t("no_checkup_data"))
 
 # ---------------------------------------------------------------------------
 # Navigation hint
 # ---------------------------------------------------------------------------
 
 st.divider()
-st.markdown(
-    "Use the **sidebar** to navigate to detailed pages: "
-    "Acquisition, Subscription, Engagement, Operations, Funnel."
-)
+st.markdown(t("nav_hint"))

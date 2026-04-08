@@ -15,10 +15,13 @@ from lib.queries import (
     sidebar_date_filter,
 )
 from lib.charts import stacked_bar_chart, pie_chart, heatmap_table, line_chart, COLORS
+from lib.i18n import t, inject_custom_css
+from lib.filters import filter_df_by_date, aggregated_data_note
 
 check_password()
+inject_custom_css()
 
-st.title("Check-up Operations")
+st.title(t("operations_title"))
 
 start, end = sidebar_date_filter(30)
 
@@ -26,15 +29,16 @@ start, end = sidebar_date_filter(30)
 # Daily check-up status (stacked bar)
 # ---------------------------------------------------------------------------
 
-st.subheader("Daily Check-up Status")
+st.subheader(t("daily_status"))
 
 df_daily = get_daily_checkups(start, end)
+df_daily = filter_df_by_date(df_daily, "day")
 
 if not df_daily.empty:
     fig = stacked_bar_chart(
         df_daily, x="day",
         y_cols=["responded", "sent", "failed", "retrying", "pending"],
-        title="Check-ups by Status",
+        title=t("chart_status"),
         colors=[COLORS["secondary"], COLORS["info"], COLORS["danger"],
                 COLORS["accent"], COLORS["muted"]],
     )
@@ -42,21 +46,25 @@ if not df_daily.empty:
 
     # Summary metrics
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Total", int(df_daily["total"].sum()))
-    c2.metric("Responded", int(df_daily["responded"].sum()))
-    c3.metric("Failed", int(df_daily["failed"].sum()))
+    c1.metric(t("total"), int(df_daily["total"].sum()),
+              help=t("desc_total_checkups"))
+    c2.metric(t("responded"), int(df_daily["responded"].sum()),
+              help=t("desc_responded"))
+    c3.metric(t("failed"), int(df_daily["failed"].sum()),
+              help=t("desc_failed"))
     total_delivered = df_daily["responded"].sum() + df_daily["sent"].sum() + df_daily["failed"].sum()
     rate = round(df_daily["responded"].sum() / max(total_delivered, 1) * 100, 1)
-    c4.metric("Response Rate", f"{rate}%")
+    c4.metric(t("response_rate"), f"{rate}%",
+              help=t("desc_response_rate"))
 
-    with st.expander("Raw data"):
+    with st.expander(t("raw_data")):
         st.dataframe(df_daily, use_container_width=True)
         st.download_button(
-            "Download CSV", df_daily.to_csv(index=False),
+            t("download_csv"), df_daily.to_csv(index=False),
             "daily_checkups.csv", "text/csv",
         )
 else:
-    st.info("No check-up data for selected range.")
+    st.info(t("no_checkup_range"))
 
 # ---------------------------------------------------------------------------
 # Call vs SMS + Retry stats (side by side)
@@ -66,11 +74,11 @@ st.divider()
 col_left, col_right = st.columns(2)
 
 with col_left:
-    st.subheader("Call vs SMS")
+    st.subheader(t("call_vs_sms"))
     df_type = get_checkup_type_stats(start, end)
     if not df_type.empty:
         fig = pie_chart(df_type, names="checkup_type", values="total",
-                        title="Check-up Type Distribution")
+                        title=t("chart_type_dist"))
         st.plotly_chart(fig, use_container_width=True)
 
         # Type stats table
@@ -79,29 +87,27 @@ with col_left:
             use_container_width=True,
         )
     else:
-        st.info("No type data.")
+        st.info(t("no_type_data"))
+    aggregated_data_note()
 
 with col_right:
-    st.subheader("Retry Attempt Stats")
+    st.subheader(t("retry_stats"))
     df_retry = get_retry_stats(start, end)
     if not df_retry.empty:
         display = df_retry.copy()
-        display.columns = ["Attempt #", "Total", "Responded", "Success Rate (%)"]
-        fig = heatmap_table(display, title="Success Rate by Attempt Number")
+        display.columns = ["Attempt #", t("total"), t("responded"), "Success Rate (%)"]
+        fig = heatmap_table(display, title=t("chart_retry"))
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.info("No retry data.")
+        st.info(t("no_retry_data"))
 
 # ---------------------------------------------------------------------------
 # Opt-out tracking
 # ---------------------------------------------------------------------------
 
 st.divider()
-st.subheader("Opt-out Summary")
+st.subheader(t("opt_out_summary"))
 
 opt_out = get_opt_out_count()
-st.metric("Opted-out Recipients", opt_out)
-st.caption(
-    "Recipients who replied STOP. These recipients are automatically "
-    "excluded from future check-ups."
-)
+st.metric(t("opted_out_recipients"), opt_out, help=t("desc_opted_out"))
+st.caption(t("opt_out_caption"))

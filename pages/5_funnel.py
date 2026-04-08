@@ -13,27 +13,30 @@ from lib.queries import (
     sidebar_date_filter,
 )
 from lib.charts import funnel_chart, histogram, COLORS
+from lib.i18n import t, inject_custom_css
+from lib.filters import filter_df_by_user_id, aggregated_data_note
 
 check_password()
+inject_custom_css()
 
-st.title("Funnel Analysis")
+st.title(t("funnel_title"))
 sidebar_date_filter()  # consistent sidebar
 
 # ---------------------------------------------------------------------------
 # Full funnel
 # ---------------------------------------------------------------------------
 
-st.subheader("User Journey Funnel")
+st.subheader(t("user_journey"))
 
 df_funnel = get_funnel_snapshot()
 
 if not df_funnel.empty:
     fig = funnel_chart(df_funnel, stage_col="stage", value_col="user_count",
-                       title="Signup to Subscription Funnel")
+                       title=t("chart_funnel"))
     st.plotly_chart(fig, use_container_width=True)
 
     # Drop-off table
-    st.subheader("Stage Drop-off")
+    st.subheader(t("stage_dropoff"))
     df_drop = df_funnel.copy()
     df_drop["prev_count"] = df_drop["user_count"].shift(1)
     df_drop["dropoff"] = df_drop.apply(
@@ -44,25 +47,28 @@ if not df_funnel.empty:
     st.dataframe(
         df_drop[["stage", "user_count", "pct_of_total", "dropoff"]].rename(
             columns={
-                "stage": "Stage",
-                "user_count": "Users",
-                "pct_of_total": "% of Total",
-                "dropoff": "Drop-off from Prev",
+                "stage": t("stage"),
+                "user_count": t("users"),
+                "pct_of_total": t("pct_of_total"),
+                "dropoff": t("dropoff_prev"),
             }
         ),
         use_container_width=True,
     )
 else:
-    st.info("No funnel data available.")
+    st.info(t("no_funnel_data"))
+
+aggregated_data_note()
 
 # ---------------------------------------------------------------------------
 # Time to first action
 # ---------------------------------------------------------------------------
 
 st.divider()
-st.subheader("Time to First Action")
+st.subheader(t("time_to_first_action"))
 
 df_action = get_time_to_first_action()
+df_action = filter_df_by_user_id(df_action)
 
 if not df_action.empty:
     col_left, col_right = st.columns(2)
@@ -73,15 +79,16 @@ if not df_action.empty:
         if not df_rec.empty:
             fig = histogram(
                 df_rec["hours_to_recipient"],
-                title="Hours: Signup to First Recipient",
-                xaxis_title="Hours",
+                title=t("chart_time_recipient"),
+                xaxis_title=t("hours"),
                 nbins=25,
             )
             st.plotly_chart(fig, use_container_width=True)
             median_h = df_rec["hours_to_recipient"].median()
-            st.metric("Median", f"{median_h:.1f} hours")
+            st.metric(t("median"), f"{median_h:.1f} h",
+                      help=t("desc_time_to_recipient"))
         else:
-            st.info("No users with recipients yet.")
+            st.info(t("no_recipients_yet"))
 
     with col_right:
         # Signup → First Check-up
@@ -89,21 +96,22 @@ if not df_action.empty:
         if not df_chk.empty:
             fig = histogram(
                 df_chk["hours_to_checkup"],
-                title="Hours: Signup to First Check-up",
-                xaxis_title="Hours",
+                title=t("chart_time_checkup"),
+                xaxis_title=t("hours"),
                 nbins=25,
             )
             st.plotly_chart(fig, use_container_width=True)
             median_h = df_chk["hours_to_checkup"].median()
-            st.metric("Median", f"{median_h:.1f} hours")
+            st.metric(t("median"), f"{median_h:.1f} h",
+                      help=t("desc_time_to_checkup"))
         else:
-            st.info("No users with check-ups yet.")
+            st.info(t("no_checkups_yet"))
 
-    with st.expander("Raw data"):
+    with st.expander(t("raw_data")):
         st.dataframe(df_action, use_container_width=True)
         st.download_button(
-            "Download CSV", df_action.to_csv(index=False),
+            t("download_csv"), df_action.to_csv(index=False),
             "time_to_first_action.csv", "text/csv",
         )
 else:
-    st.info("No user action data.")
+    st.info(t("no_action_data"))

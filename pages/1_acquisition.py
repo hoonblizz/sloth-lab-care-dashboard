@@ -14,10 +14,13 @@ from lib.queries import (
     sidebar_date_filter,
 )
 from lib.charts import dual_axis_chart, pie_chart, bar_chart
+from lib.i18n import t, inject_custom_css
+from lib.filters import filter_df_by_date, aggregated_data_note
 
 check_password()
+inject_custom_css()
 
-st.title("User Acquisition & Growth")
+st.title(t("acquisition_title"))
 
 start, end = sidebar_date_filter(30)
 
@@ -25,27 +28,28 @@ start, end = sidebar_date_filter(30)
 # User growth — dual axis (new users bar + cumulative line)
 # ---------------------------------------------------------------------------
 
-st.subheader("User Growth")
+st.subheader(t("user_growth"))
 
 df_growth = get_user_growth(start, end)
+df_growth = filter_df_by_date(df_growth, "day")
 
 if not df_growth.empty:
     fig = dual_axis_chart(
         df_growth,
         x="day", y1="new_users", y2="cumulative_users",
-        name1="New Users", name2="Cumulative",
-        title="Daily New Users & Cumulative Total",
+        name1=t("new_users"), name2=t("cumulative"),
+        title=t("chart_user_growth"),
     )
     st.plotly_chart(fig, use_container_width=True)
 
-    with st.expander("Raw data"):
+    with st.expander(t("raw_data")):
         st.dataframe(df_growth, use_container_width=True)
         st.download_button(
-            "Download CSV", df_growth.to_csv(index=False),
+            t("download_csv"), df_growth.to_csv(index=False),
             "user_growth.csv", "text/csv",
         )
 else:
-    st.info("No user data for selected range.")
+    st.info(t("no_user_data"))
 
 # ---------------------------------------------------------------------------
 # Signup methods & Platform — side by side
@@ -55,7 +59,7 @@ st.divider()
 col_left, col_right = st.columns(2)
 
 with col_left:
-    st.subheader("Signup Methods")
+    st.subheader(t("signup_methods"))
     df_methods = get_signup_methods()
     if not df_methods.empty:
         # Friendly labels
@@ -64,17 +68,19 @@ with col_left:
             lambda m: label_map.get(m, m.title())
         )
         fig = pie_chart(df_methods, names="method", values="user_count",
-                        title="Auth Provider Distribution")
+                        title=t("chart_signup_methods"))
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.info("No signup method data.")
+        st.info(t("no_signup_data"))
+    aggregated_data_note()
 
 with col_right:
-    st.subheader("Platform Distribution")
+    st.subheader(t("platform_distribution"))
     df_platform = get_platform_distribution()
     if not df_platform.empty:
         fig = pie_chart(df_platform, names="platform", values="user_count",
-                        title="iOS vs Android")
+                        title=t("chart_platform"))
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.info("No platform data (requires analytics_events).")
+        st.info(t("no_platform_data"))
+    aggregated_data_note()
