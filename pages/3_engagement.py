@@ -17,7 +17,7 @@ from lib.queries import (
 )
 from lib.charts import line_chart, bar_chart, heatmap_table, COLORS
 from lib.i18n import t, inject_custom_css
-from lib.filters import filter_df_by_date, aggregated_data_note
+from lib.filters import filter_df_by_date, get_internal_user_ids
 
 check_password()
 inject_custom_css()
@@ -26,13 +26,15 @@ st.title(t("engagement_title"))
 
 start, end = sidebar_date_filter(30)
 
+exclude_ids = tuple(get_internal_user_ids()) if st.session_state.get("exclude_internal") else ()
+
 # ---------------------------------------------------------------------------
 # DAU / WAU / MAU cards
 # ---------------------------------------------------------------------------
 
 st.subheader(t("active_users"))
 
-active = get_dau_wau_mau()
+active = get_dau_wau_mau(exclude_user_ids=exclude_ids)
 if active:
     c1, c2, c3 = st.columns(3)
     c1.metric(t("dau"), active.get("dau", 0), help=t("desc_dau"))
@@ -41,8 +43,6 @@ if active:
 else:
     st.info(t("no_active_data"))
 
-aggregated_data_note()
-
 # ---------------------------------------------------------------------------
 # DAU trend
 # ---------------------------------------------------------------------------
@@ -50,7 +50,7 @@ aggregated_data_note()
 st.divider()
 st.subheader(t("dau_trend"))
 
-df_dau = get_dau_trend(start, end)
+df_dau = get_dau_trend(start, end, exclude_user_ids=exclude_ids)
 df_dau = filter_df_by_date(df_dau, "day")
 if not df_dau.empty:
     fig = line_chart(df_dau, x="day", y="active_users", title=t("chart_dau"))
@@ -65,7 +65,7 @@ else:
 st.divider()
 st.subheader(t("cohort_retention"))
 
-df_ret = get_retention_cohort()
+df_ret = get_retention_cohort(exclude_user_ids=exclude_ids)
 if not df_ret.empty:
     # Show as styled table
     display_df = df_ret.copy()
@@ -82,8 +82,6 @@ if not df_ret.empty:
 else:
     st.info(t("no_retention_data"))
 
-aggregated_data_note()
-
 # ---------------------------------------------------------------------------
 # Feature adoption
 # ---------------------------------------------------------------------------
@@ -91,7 +89,7 @@ aggregated_data_note()
 st.divider()
 st.subheader(t("feature_adoption"))
 
-df_feat = get_feature_adoption()
+df_feat = get_feature_adoption(exclude_user_ids=exclude_ids)
 if not df_feat.empty:
     fig = bar_chart(
         df_feat, x="feature", y="adoption_rate",
@@ -108,7 +106,7 @@ else:
 st.divider()
 st.subheader(t("weekly_response_rate"))
 
-df_resp = get_weekly_response_rate(start, end)
+df_resp = get_weekly_response_rate(start, end, exclude_user_ids=exclude_ids)
 df_resp = filter_df_by_date(df_resp, "week_start")
 if not df_resp.empty:
     fig = line_chart(df_resp, x="week_start", y="response_rate",

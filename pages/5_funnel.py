@@ -14,7 +14,7 @@ from lib.queries import (
 )
 from lib.charts import funnel_chart, histogram, COLORS
 from lib.i18n import t, inject_custom_css
-from lib.filters import filter_df_by_user_id, get_internal_user_ids
+from lib.filters import get_internal_user_ids
 
 check_password()
 inject_custom_css()
@@ -66,8 +66,7 @@ else:
 st.divider()
 st.subheader(t("time_to_first_action"))
 
-df_action = get_time_to_first_action()
-df_action = filter_df_by_user_id(df_action)
+df_action = get_time_to_first_action(exclude_user_ids=exclude_ids)
 
 if not df_action.empty:
     col_left, col_right = st.columns(2)

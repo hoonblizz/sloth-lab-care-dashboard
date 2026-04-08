@@ -15,7 +15,7 @@ from lib.queries import (
 )
 from lib.charts import dual_axis_chart, pie_chart, bar_chart
 from lib.i18n import t, inject_custom_css
-from lib.filters import filter_df_by_date, aggregated_data_note
+from lib.filters import filter_df_by_date, get_internal_user_ids
 
 check_password()
 inject_custom_css()
@@ -24,13 +24,15 @@ st.title(t("acquisition_title"))
 
 start, end = sidebar_date_filter(30)
 
+exclude_ids = tuple(get_internal_user_ids()) if st.session_state.get("exclude_internal") else ()
+
 # ---------------------------------------------------------------------------
 # User growth — dual axis (new users bar + cumulative line)
 # ---------------------------------------------------------------------------
 
 st.subheader(t("user_growth"))
 
-df_growth = get_user_growth(start, end)
+df_growth = get_user_growth(start, end, exclude_user_ids=exclude_ids)
 df_growth = filter_df_by_date(df_growth, "day")
 
 if not df_growth.empty:
@@ -60,7 +62,7 @@ col_left, col_right = st.columns(2)
 
 with col_left:
     st.subheader(t("signup_methods"))
-    df_methods = get_signup_methods()
+    df_methods = get_signup_methods(exclude_user_ids=exclude_ids)
     if not df_methods.empty:
         # Friendly labels
         label_map = {"google": "Google", "apple": "Apple", "email": "Email/OTP"}
@@ -72,15 +74,13 @@ with col_left:
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.info(t("no_signup_data"))
-    aggregated_data_note()
 
 with col_right:
     st.subheader(t("platform_distribution"))
-    df_platform = get_platform_distribution()
+    df_platform = get_platform_distribution(exclude_user_ids=exclude_ids)
     if not df_platform.empty:
         fig = pie_chart(df_platform, names="platform", values="user_count",
                         title=t("chart_platform"))
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.info(t("no_platform_data"))
-    aggregated_data_note()

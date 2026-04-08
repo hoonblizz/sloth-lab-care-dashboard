@@ -18,9 +18,8 @@ from lib.queries import (
 from lib.charts import pie_chart, bar_chart, timing_heatmap, heatmap_table, COLORS
 from lib.i18n import t, inject_custom_css, sidebar_language_toggle
 from lib.filters import (
-    filter_df_by_email,
     sidebar_filters,
-    aggregated_data_note,
+    get_internal_user_ids,
 )
 
 check_password()
@@ -32,13 +31,15 @@ sidebar_filters()
 
 st.title(t("marketing_title"))
 
+exclude_ids = tuple(get_internal_user_ids()) if st.session_state.get("exclude_internal") else ()
+
 # ==========================================================================
 # 1. Market Distribution
 # ==========================================================================
 
 st.header(t("market_distribution"))
 
-df_geo = get_recipient_geography()
+df_geo = get_recipient_geography(exclude_user_ids=exclude_ids)
 if not df_geo.empty:
     c1, c2 = st.columns(2)
     with c1:
@@ -52,8 +53,6 @@ if not df_geo.empty:
 else:
     st.info(t("no_recipient_data"))
 
-aggregated_data_note()
-
 # ==========================================================================
 # 2. Engagement Health
 # ==========================================================================
@@ -62,7 +61,7 @@ st.divider()
 st.header(t("engagement_health"))
 
 # --- Inactive user alert cards ---
-inactive = get_inactive_users()
+inactive = get_inactive_users(exclude_user_ids=exclude_ids)
 if inactive:
     c1, c2, c3, c4 = st.columns(4)
     c1.metric(t("inactive_7d"), inactive.get("inactive_7d", 0),
@@ -77,11 +76,9 @@ if inactive:
     if at_risk and at_risk > 0:
         st.warning(t("at_risk_warning").format(count=at_risk))
 
-aggregated_data_note()
-
 # --- Engagement segments ---
 st.subheader(t("user_segments"))
-df_seg = get_user_engagement_segments()
+df_seg = get_user_engagement_segments(exclude_user_ids=exclude_ids)
 if not df_seg.empty:
     c1, c2 = st.columns(2)
     with c1:
@@ -97,8 +94,7 @@ else:
 
 # --- User health table ---
 st.subheader(t("user_health_scores"))
-df_health = get_user_health()
-df_health = filter_df_by_email(df_health, "email")
+df_health = get_user_health(exclude_user_ids=exclude_ids)
 if not df_health.empty:
     # Filters
     fc1, fc2 = st.columns(2)
@@ -150,7 +146,7 @@ st.header(t("timing_optimization"))
 
 # --- Day x Hour heatmap ---
 st.subheader(t("response_by_day_hour"))
-df_timing = get_checkup_timing()
+df_timing = get_checkup_timing(exclude_user_ids=exclude_ids)
 if not df_timing.empty:
     fig = timing_heatmap(df_timing, x="hour_utc", y="day_name", z="response_rate",
                          title=t("chart_timing"))
@@ -171,7 +167,7 @@ else:
 
 # --- Response latency ---
 st.subheader(t("response_latency"))
-df_latency = get_response_latency()
+df_latency = get_response_latency(exclude_user_ids=exclude_ids)
 if not df_latency.empty:
     c1, c2 = st.columns(2)
     with c1:

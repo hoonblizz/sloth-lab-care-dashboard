@@ -93,7 +93,7 @@ st.subheader(t("checkup_trend_title"))
 from datetime import date, timedelta
 
 start_14 = date.today() - timedelta(days=14)
-df_checkups = get_daily_checkups(start_14, date.today())
+df_checkups = get_daily_checkups(start_14, date.today(), exclude_user_ids=exclude_ids)
 
 if not df_checkups.empty:
     col_left, col_right = st.columns(2)

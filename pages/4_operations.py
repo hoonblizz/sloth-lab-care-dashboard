@@ -16,7 +16,7 @@ from lib.queries import (
 )
 from lib.charts import stacked_bar_chart, pie_chart, heatmap_table, line_chart, COLORS
 from lib.i18n import t, inject_custom_css
-from lib.filters import filter_df_by_date, aggregated_data_note
+from lib.filters import filter_df_by_date, get_internal_user_ids
 
 check_password()
 inject_custom_css()
@@ -25,13 +25,15 @@ st.title(t("operations_title"))
 
 start, end = sidebar_date_filter(30)
 
+exclude_ids = tuple(get_internal_user_ids()) if st.session_state.get("exclude_internal") else ()
+
 # ---------------------------------------------------------------------------
 # Daily check-up status (stacked bar)
 # ---------------------------------------------------------------------------
 
 st.subheader(t("daily_status"))
 
-df_daily = get_daily_checkups(start, end)
+df_daily = get_daily_checkups(start, end, exclude_user_ids=exclude_ids)
 df_daily = filter_df_by_date(df_daily, "day")
 
 if not df_daily.empty:
@@ -75,7 +77,7 @@ col_left, col_right = st.columns(2)
 
 with col_left:
     st.subheader(t("call_vs_sms"))
-    df_type = get_checkup_type_stats(start, end)
+    df_type = get_checkup_type_stats(start, end, exclude_user_ids=exclude_ids)
     if not df_type.empty:
         fig = pie_chart(df_type, names="checkup_type", values="total",
                         title=t("chart_type_dist"))
@@ -88,11 +90,10 @@ with col_left:
         )
     else:
         st.info(t("no_type_data"))
-    aggregated_data_note()
 
 with col_right:
     st.subheader(t("retry_stats"))
-    df_retry = get_retry_stats(start, end)
+    df_retry = get_retry_stats(start, end, exclude_user_ids=exclude_ids)
     if not df_retry.empty:
         display = df_retry.copy()
         display.columns = ["Attempt #", t("total"), t("responded"), "Success Rate (%)"]
@@ -108,6 +109,6 @@ with col_right:
 st.divider()
 st.subheader(t("opt_out_summary"))
 
-opt_out = get_opt_out_count()
+opt_out = get_opt_out_count(exclude_user_ids=exclude_ids)
 st.metric(t("opted_out_recipients"), opt_out, help=t("desc_opted_out"))
 st.caption(t("opt_out_caption"))

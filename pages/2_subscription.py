@@ -18,7 +18,7 @@ from lib.queries import (
 )
 from lib.charts import pie_chart, bar_chart, line_chart, COLORS
 from lib.i18n import t, inject_custom_css
-from lib.filters import aggregated_data_note, get_internal_user_ids
+from lib.filters import get_internal_user_ids
 
 check_password()
 inject_custom_css()
@@ -26,11 +26,13 @@ inject_custom_css()
 st.title(t("subscription_title"))
 start, end = sidebar_date_filter()
 
+exclude_ids = tuple(get_internal_user_ids()) if st.session_state.get("exclude_internal") else ()
+
 # ---------------------------------------------------------------------------
 # MRR Summary
 # ---------------------------------------------------------------------------
 
-kpis = get_overview_kpis()
+kpis = get_overview_kpis(exclude_user_ids=exclude_ids)
 if kpis:
     c1, c2, c3, c4 = st.columns(4)
     c1.metric(t("mrr"), f"CA${kpis.get('mrr', 0):,.2f}",
@@ -42,8 +44,6 @@ if kpis:
     c4.metric(t("premium_total"), kpis.get("premium_users", 0),
               help=t("desc_premium"))
 
-aggregated_data_note()
-
 # ---------------------------------------------------------------------------
 # Tier distribution
 # ---------------------------------------------------------------------------
@@ -53,7 +53,7 @@ col_left, col_right = st.columns(2)
 
 with col_left:
     st.subheader(t("tier_distribution"))
-    df_tier = get_tier_distribution()
+    df_tier = get_tier_distribution(exclude_user_ids=exclude_ids)
     if not df_tier.empty:
         # Combine tier + plan_type for labeling
         df_tier["label"] = df_tier.apply(
@@ -88,7 +88,7 @@ with col_right:
 st.divider()
 st.subheader(t("trial_conversion_title"))
 
-df_conv = get_trial_conversion()
+df_conv = get_trial_conversion(exclude_user_ids=exclude_ids)
 
 if not df_conv.empty:
     df_conv = df_conv.sort_values("cohort_week")
@@ -108,14 +108,11 @@ if not df_conv.empty:
 else:
     st.info(t("no_conversion_data"))
 
-aggregated_data_note()
-
 # ---------------------------------------------------------------------------
 # MRR Trend (subscription_events based)
 # ---------------------------------------------------------------------------
 
 st.divider()
-exclude_ids = tuple(get_internal_user_ids()) if st.session_state.get("exclude_internal") else ()
 
 st.subheader(t("mrr_trend_title"), help=t("desc_mrr_trend"))
 df_mrr = get_mrr_trend(start, end, exclude_user_ids=exclude_ids)

@@ -497,6 +497,13 @@ def inject_custom_css() -> None:
         .stMarkdown h3 { font-size: 1.3rem !important; }
         /* Body / caption */
         .stMarkdown p, .stCaption { font-size: 1.0rem !important; }
+        /* Sidebar text sizes */
+        [data-testid="stSidebar"] label { font-size: 1.05rem !important; }
+        [data-testid="stSidebar"] .stMarkdown h2 { font-size: 1.4rem !important; }
+        [data-testid="stSidebar"] .stMarkdown h3 { font-size: 1.2rem !important; }
+        [data-testid="stSidebar"] .stMarkdown p,
+        [data-testid="stSidebar"] .stCaption { font-size: 1.0rem !important; }
+        [data-testid="stSidebar"] [data-baseweb="select"] span { font-size: 1.0rem !important; }
         </style>
         """,
         unsafe_allow_html=True,
