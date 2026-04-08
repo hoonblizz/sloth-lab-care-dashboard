@@ -64,7 +64,7 @@ c1.metric(t("total_users"), f"{kpis.get('total_users', 0):,}",
           help=t("desc_total_users"))
 c2.metric(t("premium"), kpis.get("premium_users", 0),
           help=t("desc_premium"))
-c3.metric(t("mrr"), f"${kpis.get('mrr', 0):,.2f}",
+c3.metric(t("mrr"), f"CA${kpis.get('mrr', 0):,.2f}",
           help=t("desc_mrr"))
 c4.metric(t("conversion"), f"{kpis.get('trial_conversion_rate', 0)}%",
           help=t("desc_conversion"))

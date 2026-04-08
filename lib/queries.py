@@ -67,6 +67,29 @@ def get_trial_conversion() -> pd.DataFrame:
     return pd.DataFrame(rows) if rows else pd.DataFrame()
 
 
+@st.cache_data(ttl=300)
+def get_mrr_trend(start: date, end: date, exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
+    params = {**_date_params(start, end)}
+    if exclude_user_ids:
+        params["p_exclude_user_ids"] = list(exclude_user_ids)
+    rows = rpc("analytics_mrr_trend", params)
+    return pd.DataFrame(rows) if rows else pd.DataFrame()
+
+
+@st.cache_data(ttl=300)
+def get_churn_reasons(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
+    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    rows = rpc("analytics_churn_reasons", params)
+    return pd.DataFrame(rows) if rows else pd.DataFrame()
+
+
+@st.cache_data(ttl=300)
+def get_subscription_lifecycle(exclude_user_ids: tuple[str, ...] = ()) -> pd.DataFrame:
+    params = {"p_exclude_user_ids": list(exclude_user_ids)} if exclude_user_ids else None
+    rows = rpc("analytics_subscription_lifecycle", params)
+    return pd.DataFrame(rows) if rows else pd.DataFrame()
+
+
 # ---------------------------------------------------------------------------
 # Engagement
 # ---------------------------------------------------------------------------
