@@ -6,7 +6,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import streamlit as st
 import pandas as pd
-from lib.db import check_password
 from lib.queries import (
     get_funnel_snapshot,
     get_time_to_first_action,
@@ -16,7 +15,6 @@ from lib.charts import funnel_chart, histogram, COLORS
 from lib.i18n import t, inject_custom_css
 from lib.filters import get_internal_user_ids
 
-check_password()
 inject_custom_css()
 
 st.title(t("funnel_title"))
@@ -27,6 +25,7 @@ sidebar_date_filter()  # consistent sidebar
 # ---------------------------------------------------------------------------
 
 st.subheader(t("user_journey"))
+st.caption(t("section_desc_funnel"))
 
 exclude_ids = tuple(get_internal_user_ids()) if st.session_state.get("exclude_internal") else ()
 df_funnel = get_funnel_snapshot(exclude_user_ids=exclude_ids)
@@ -34,7 +33,7 @@ df_funnel = get_funnel_snapshot(exclude_user_ids=exclude_ids)
 if not df_funnel.empty:
     fig = funnel_chart(df_funnel, stage_col="stage", value_col="user_count",
                        title=t("chart_funnel"))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     # Drop-off table
     st.subheader(t("stage_dropoff"))
@@ -54,7 +53,7 @@ if not df_funnel.empty:
                 "dropoff": t("dropoff_prev"),
             }
         ),
-        use_container_width=True,
+        width="stretch",
     )
 else:
     st.info(t("no_funnel_data"))
@@ -65,6 +64,7 @@ else:
 
 st.divider()
 st.subheader(t("time_to_first_action"))
+st.caption(t("section_desc_time_to_action"))
 
 df_action = get_time_to_first_action(exclude_user_ids=exclude_ids)
 
@@ -81,7 +81,7 @@ if not df_action.empty:
                 xaxis_title=t("hours"),
                 nbins=25,
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
             median_h = df_rec["hours_to_recipient"].median()
             st.metric(t("median"), f"{median_h:.1f} h",
                       help=t("desc_time_to_recipient"))
@@ -98,7 +98,7 @@ if not df_action.empty:
                 xaxis_title=t("hours"),
                 nbins=25,
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
             median_h = df_chk["hours_to_checkup"].median()
             st.metric(t("median"), f"{median_h:.1f} h",
                       help=t("desc_time_to_checkup"))
@@ -106,7 +106,7 @@ if not df_action.empty:
             st.info(t("no_checkups_yet"))
 
     with st.expander(t("raw_data")):
-        st.dataframe(df_action, use_container_width=True)
+        st.dataframe(df_action, width="stretch")
         st.download_button(
             t("download_csv"), df_action.to_csv(index=False),
             "time_to_first_action.csv", "text/csv",

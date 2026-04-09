@@ -6,7 +6,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import streamlit as st
 import pandas as pd
-from lib.db import check_password
 from lib.queries import (
     get_recipient_geography,
     get_checkup_timing,
@@ -22,7 +21,6 @@ from lib.filters import (
     get_internal_user_ids,
 )
 
-check_password()
 inject_custom_css()
 
 # Sidebar (no date picker on this page)
@@ -38,6 +36,7 @@ exclude_ids = tuple(get_internal_user_ids()) if st.session_state.get("exclude_in
 # ==========================================================================
 
 st.header(t("market_distribution"))
+st.caption(t("section_desc_market"))
 
 df_geo = get_recipient_geography(exclude_user_ids=exclude_ids)
 if not df_geo.empty:
@@ -45,11 +44,11 @@ if not df_geo.empty:
     with c1:
         fig = pie_chart(df_geo, names="country", values="recipient_count",
                         title=t("chart_geo"))
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     with c2:
         display = df_geo.copy()
         display.columns = [t("country"), t("code"), t("total"), t("active")]
-        st.dataframe(display, use_container_width=True, hide_index=True)
+        st.dataframe(display, width="stretch", hide_index=True)
 else:
     st.info(t("no_recipient_data"))
 
@@ -59,6 +58,7 @@ else:
 
 st.divider()
 st.header(t("engagement_health"))
+st.caption(t("section_desc_engagement_health"))
 
 # --- Inactive user alert cards ---
 inactive = get_inactive_users(exclude_user_ids=exclude_ids)
@@ -78,22 +78,24 @@ if inactive:
 
 # --- Engagement segments ---
 st.subheader(t("user_segments"))
+st.caption(t("section_desc_segments"))
 df_seg = get_user_engagement_segments(exclude_user_ids=exclude_ids)
 if not df_seg.empty:
     c1, c2 = st.columns(2)
     with c1:
         fig = bar_chart(df_seg, x="segment", y="user_count",
                         title=t("chart_segments"))
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     with c2:
         display = df_seg.copy()
         display.columns = [t("segment"), t("users"), t("premium_col"), t("pct_premium")]
-        st.dataframe(display, use_container_width=True, hide_index=True)
+        st.dataframe(display, width="stretch", hide_index=True)
 else:
     st.info(t("no_segment_data"))
 
 # --- User health table ---
 st.subheader(t("user_health_scores"))
+st.caption(t("section_desc_health_scores"))
 df_health = get_user_health(exclude_user_ids=exclude_ids)
 if not df_health.empty:
     # Filters
@@ -128,7 +130,7 @@ if not df_health.empty:
     display.columns = [t("email"), t("tier"), t("days_inactive"),
                        t("checkups"), t("response_pct"), t("status")]
 
-    st.dataframe(display, use_container_width=True, hide_index=True,
+    st.dataframe(display, width="stretch", hide_index=True,
                  height=min(400, 40 + 35 * len(display)))
 
     with st.expander(t("download")):
@@ -146,11 +148,12 @@ st.header(t("timing_optimization"))
 
 # --- Day x Hour heatmap ---
 st.subheader(t("response_by_day_hour"))
+st.caption(t("section_desc_timing"))
 df_timing = get_checkup_timing(exclude_user_ids=exclude_ids)
 if not df_timing.empty:
     fig = timing_heatmap(df_timing, x="hour_utc", y="day_name", z="response_rate",
                          title=t("chart_timing"))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     # Find best time
     if "response_rate" in df_timing.columns:
@@ -167,6 +170,7 @@ else:
 
 # --- Response latency ---
 st.subheader(t("response_latency"))
+st.caption(t("section_desc_latency"))
 df_latency = get_response_latency(exclude_user_ids=exclude_ids)
 if not df_latency.empty:
     c1, c2 = st.columns(2)
@@ -174,11 +178,11 @@ if not df_latency.empty:
         display = df_latency.copy()
         display.columns = [t("type_col"), t("responded_col"), t("avg_min"),
                            t("median_min"), t("p90_min")]
-        st.dataframe(display, use_container_width=True, hide_index=True)
+        st.dataframe(display, width="stretch", hide_index=True)
     with c2:
         fig = bar_chart(df_latency, x="checkup_type", y="avg_minutes",
                         title=t("chart_latency"))
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 else:
     st.info(t("no_latency_data"))
 
@@ -188,6 +192,7 @@ else:
 
 st.divider()
 st.header(t("actionable_insights"))
+st.caption(t("section_desc_insights"))
 
 insights = []
 

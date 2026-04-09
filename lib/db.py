@@ -8,22 +8,6 @@ import streamlit as st
 from supabase import create_client, Client
 
 
-def check_password():
-    """Simple password gate for dashboard access."""
-    if st.session_state.get("authenticated"):
-        return
-
-    pwd = st.text_input("Password", type="password", key="dashboard_pwd")
-    if pwd:
-        expected = _get_secret("DASHBOARD_PASSWORD")
-        if pwd == expected:
-            st.session_state.authenticated = True
-            st.rerun()
-        else:
-            st.error("Incorrect password")
-    st.stop()
-
-
 @st.cache_resource
 def get_client() -> Client:
     """Get Supabase client with service_role key (cached)."""

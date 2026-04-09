@@ -19,7 +19,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import streamlit as st
-from lib.db import check_password
 from lib.queries import get_overview_kpis, get_daily_checkups
 from lib.charts import line_chart, stacked_bar_chart, COLORS
 from lib.i18n import t, sidebar_language_toggle, inject_custom_css
@@ -36,7 +35,6 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-check_password()
 inject_custom_css()
 
 # Sidebar — language + filters (no date picker on overview)
@@ -89,6 +87,7 @@ c4.metric(t("response_rate_today"), f"{resp_rate}%",
 
 st.divider()
 st.subheader(t("checkup_trend_title"))
+st.caption(t("section_desc_checkup_trend"))
 
 from datetime import date, timedelta
 
@@ -104,7 +103,7 @@ if not df_checkups.empty:
             title=t("daily_checkups_status"),
             colors=[COLORS["secondary"], COLORS["info"], COLORS["danger"], COLORS["muted"]],
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     with col_right:
         # Response rate line
@@ -117,7 +116,7 @@ if not df_checkups.empty:
             df_checkups, x="day", y="response_rate",
             title=t("daily_response_rate"),
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 else:
     st.info(t("no_checkup_data"))
 

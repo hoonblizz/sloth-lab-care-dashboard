@@ -74,6 +74,43 @@ TRANSLATIONS = {
         "desc_time_to_recipient": "Hours between signup and adding the first care recipient.",
         "desc_time_to_checkup": "Hours between signup and scheduling the first check-up.",
 
+        # --- Section descriptions (captions below each section header) ---
+        # Overview
+        "section_desc_checkup_trend": "Daily check-up volume and response rate over the last 14 days. A healthy response rate is above 60%.",
+        # Acquisition
+        "section_desc_user_growth": "Daily new signups and cumulative total. Target: 5\u201310% week-over-week growth.",
+        "section_desc_signup_methods": "Auth provider breakdown — use to prioritize sign-in UX by popularity.",
+        "section_desc_platform": "iOS vs Android split — guides platform-specific investment decisions.",
+        # Subscription
+        "section_desc_tier": "Free vs Premium ratio. Consumer SaaS benchmark: 2\u20135% paid conversion.",
+        "section_desc_monthly_annual": "Monthly vs Annual plan mix. Goal: 30%+ annual for better retention & LTV.",
+        "section_desc_trial_conversion": "Trial-to-paid conversion by weekly signup cohort. SaaS average: 2\u20135%.",
+        "section_desc_mrr_trend": "Monthly Recurring Revenue trend — key product-market fit indicator.",
+        "section_desc_subscription_lifecycle": "Distribution of subscription events (new, renewal, cancellation, etc.).",
+        "section_desc_churn_reasons": "Cancellation/expiration reason breakdown. Focus on resolving top reasons.",
+        # Engagement
+        "section_desc_active_users": "DAU/WAU/MAU snapshot. DAU/MAU ratio above 20% indicates good stickiness.",
+        "section_desc_dau_trend": "Daily active user count over time — watch for drops after feature changes.",
+        "section_desc_cohort_retention": "Weekly cohort retention. Benchmarks: D1 > 40%, D7 > 20%, D30 > 10%.",
+        "section_desc_feature_adoption": "Premium feature usage rates — low adoption may signal discoverability issues.",
+        "section_desc_weekly_response": "Weekly response rate trend. Target: 60%+ sustained.",
+        # Operations
+        "section_desc_daily_status": "Check-ups by status. Investigate if failure rate exceeds 10%.",
+        "section_desc_call_sms": "Call vs SMS channel comparison — use for cost optimization decisions.",
+        "section_desc_retry": "Success rate by retry attempt. Effectiveness typically drops after 2\u20133 attempts.",
+        "section_desc_opt_out": "Recipients who replied STOP. A sudden spike warrants investigation.",
+        # Funnel
+        "section_desc_funnel": "Signup \u2192 subscription funnel. Identify the biggest drop-off point to prioritize fixes.",
+        "section_desc_time_to_action": "Time from signup to first action. Targets: first recipient < 24h, first check-up < 48h.",
+        # Marketing
+        "section_desc_market": "Recipient geographic distribution — reveals market concentration and expansion opportunities.",
+        "section_desc_engagement_health": "Inactive user counts by period. At-risk premium users need immediate outreach.",
+        "section_desc_segments": "Users by engagement level. Target: Active + Power users > 50% of total.",
+        "section_desc_health_scores": "Individual user health assessment — filter by status and tier to prioritize actions.",
+        "section_desc_timing": "Response rate heatmap by day and hour (UTC). Use to optimize default schedule times.",
+        "section_desc_latency": "Call vs SMS response speed comparison — informs channel recommendations.",
+        "section_desc_insights": "Auto-generated actionable recommendations based on current data patterns.",
+
         # --- Acquisition ---
         "acquisition_title": "User Acquisition & Growth",
         "user_growth": "User Growth",
@@ -298,6 +335,36 @@ TRANSLATIONS = {
         "desc_time_to_recipient": "\uac00\uc785 \ud6c4 \uccab \ub3cc\ubcf4 \ub300\uc0c1\uc790\ub97c \ucd94\uac00\ud558\uae30\uae4c\uc9c0 \uac78\ub9b0 \uc2dc\uac04(\uc2dc\uac04).",
         "desc_time_to_checkup": "\uac00\uc785 \ud6c4 \uccab \uccb4\ud06c\uc5c5\uc744 \uc608\uc57d\ud558\uae30\uae4c\uc9c0 \uac78\ub9b0 \uc2dc\uac04(\uc2dc\uac04).",
 
+        # --- Section descriptions ---
+        "section_desc_checkup_trend": "\ucd5c\uadfc 14\uc77c\uac04 \uc77c\ubcc4 \uccb4\ud06c\uc5c5 \ubc1c\uc1a1\ub7c9\uacfc \uc751\ub2f5\ub960 \ucd94\uc774. \uc591\ud638 \uc751\ub2f5\ub960 \uae30\uc900: 60% \uc774\uc0c1.",
+        "section_desc_user_growth": "\uc77c\ubcc4 \uc2e0\uaddc \uac00\uc785\uacfc \ub204\uc801 \ud569\uacc4. \ubaa9\ud45c: \uc8fc\uac04 5\u201310% \uc131\uc7a5.",
+        "section_desc_signup_methods": "\uc778\uc99d \uc81c\uacf5\uc790\ubcc4 \ube44\uc911 \u2014 \uc778\uae30\ub3c4 \uae30\uc900\uc73c\ub85c \ub85c\uadf8\uc778 UX \uc6b0\uc120\uc21c\uc704 \uacb0\uc815.",
+        "section_desc_platform": "iOS vs Android \ube44\uc728 \u2014 \ud50c\ub7ab\ud3fc\ubcc4 \ud22c\uc790 \ubc29\ud5a5 \uacb0\uc815\uc5d0 \ud65c\uc6a9.",
+        "section_desc_tier": "Free vs Premium \ube44\uc728. \uc18c\ube44\uc790 SaaS \ubca4\uce58\ub9c8\ud06c: \uc720\ub8cc \uc804\ud658\uc728 2\u20135%.",
+        "section_desc_monthly_annual": "\uc6d4\uac04 vs \uc5f0\uac04 \uc694\uae08\uc81c \ube44\uc728. \ubaa9\ud45c: \uc5f0\uac04 30%+ (\uc720\uc9c0\uc728 \ubc0f LTV \uac1c\uc120).",
+        "section_desc_trial_conversion": "\uc8fc\uac04 \uac00\uc785 \ucf54\ud638\ud2b8\ubcc4 \ud2b8\ub77c\uc774\uc5bc \uc804\ud658\uc728. SaaS \ud3c9\uade0: 2\u20135%.",
+        "section_desc_mrr_trend": "\uc6d4\uac04 \ubc18\ubcf5 \uc218\uc775(MRR) \ucd94\uc774 \u2014 \uc81c\ud488-\uc2dc\uc7a5 \uc801\ud569\uc131 \ud575\uc2ec \uc9c0\ud45c.",
+        "section_desc_subscription_lifecycle": "\uad6c\ub3c5 \uc774\ubca4\ud2b8 \ubd84\ud3ec (\uc2e0\uaddc, \uac31\uc2e0, \ucde8\uc18c \ub4f1).",
+        "section_desc_churn_reasons": "\ucde8\uc18c/\ub9cc\ub8cc \uc0ac\uc720 \ubd84\ud3ec. \uc0c1\uc704 \uc0ac\uc720 \ud574\uacb0\uc5d0 \uc9d1\uc911 \ud544\uc694.",
+        "section_desc_active_users": "DAU/WAU/MAU \uc2a4\ub0c5\uc0f7. DAU/MAU \ube44\uc728 20% \uc774\uc0c1\uc774\uba74 \uc591\ud638\ud55c \uc810\ucc29\ub3c4.",
+        "section_desc_dau_trend": "\uc77c\ubcc4 \ud65c\uc131 \uc0ac\uc6a9\uc790 \ucd94\uc774 \u2014 \uae30\ub2a5 \ubcc0\uacbd \ud6c4 \uac10\uc18c \uc5ec\ubd80 \uc8fc\uc2dc.",
+        "section_desc_cohort_retention": "\uc8fc\uac04 \ucf54\ud638\ud2b8 \uc720\uc9c0\uc728. \ubca4\uce58\ub9c8\ud06c: D1 > 40%, D7 > 20%, D30 > 10%.",
+        "section_desc_feature_adoption": "\ud504\ub9ac\ubbf8\uc5c4 \uae30\ub2a5 \uc0ac\uc6a9\ub960 \u2014 \ub0ae\uc740 \ucc44\ud0dd\ub960\uc740 \ubc1c\uacac\uc131 \ubb38\uc81c \uac00\ub2a5\uc131.",
+        "section_desc_weekly_response": "\uc8fc\uac04 \uc751\ub2f5\ub960 \ud2b8\ub80c\ub4dc. \ubaa9\ud45c: 60% \uc774\uc0c1 \uc9c0\uc18d \uc720\uc9c0.",
+        "section_desc_daily_status": "\uc0c1\ud0dc\ubcc4 \uccb4\ud06c\uc5c5. \uc2e4\ud328\uc728 10% \uc774\uc0c1 \uc2dc \uc870\uc0ac \ud544\uc694.",
+        "section_desc_call_sms": "\uc804\ud654 vs SMS \ucc44\ub110 \ube44\uad50 \u2014 \ube44\uc6a9 \ucd5c\uc801\ud654 \uc758\uc0ac\uacb0\uc815\uc5d0 \ud65c\uc6a9.",
+        "section_desc_retry": "\uc7ac\uc2dc\ub3c4 \ud69f\uc218\ubcc4 \uc131\uacf5\ub960. 2\u20133\ud68c \uc774\ud6c4 \ud6a8\uacfc\uac00 \uac10\uc18c\ud558\ub294 \uacbd\ud5a5.",
+        "section_desc_opt_out": "STOP\uc744 \ud68c\uc2e0\ud55c \uc218\uc2e0\uc790 \ucd94\uc801. \uae09\uc99d \uc2dc \uc810\uac80 \ud544\uc694.",
+        "section_desc_funnel": "\uac00\uc785 \u2192 \uad6c\ub3c5 \ud37c\ub110. \ucd5c\ub300 \uc774\ud0c8\uc810\uc744 \ud30c\uc545\ud558\uc5ec \uc6b0\uc120 \uac1c\uc120.",
+        "section_desc_time_to_action": "\uac00\uc785 \ud6c4 \uccab \ud589\ub3d9\uae4c\uc9c0 \uc18c\uc694 \uc2dc\uac04. \ubaa9\ud45c: \uccab \uc218\uc2e0\uc790 < 24\uc2dc\uac04, \uccab \uccb4\ud06c\uc5c5 < 48\uc2dc\uac04.",
+        "section_desc_market": "\uc218\uc2e0\uc790 \uc9c0\uc5ed \ubd84\ud3ec \u2014 \uc2dc\uc7a5 \uc9d1\uc911\ub3c4\uc640 \ud655\uc7a5 \uae30\ud68c \ud30c\uc545.",
+        "section_desc_engagement_health": "\uae30\uac04\ubcc4 \ube44\ud65c\uc131 \uc0ac\uc6a9\uc790 \ud604\ud669. \uc704\ud5d8 \ud504\ub9ac\ubbf8\uc5c4 \uc0ac\uc6a9\uc790\ub294 \uc989\uc2dc \ub300\uc751 \ud544\uc694.",
+        "section_desc_segments": "\ucc38\uc5ec\ub3c4\ubcc4 \uc0ac\uc6a9\uc790 \ubd84\ud3ec. \ubaa9\ud45c: \ud65c\uc131 + \ud30c\uc6cc \uc720\uc800\uac00 \uc804\uccb4\uc758 50% \uc774\uc0c1.",
+        "section_desc_health_scores": "\uac1c\ubcc4 \uc0ac\uc6a9\uc790 \uac74\uac15 \ud3c9\uac00 \u2014 \uc0c1\ud0dc\uc640 \ud2f0\uc5b4\ub85c \ud544\ud130\ub9c1\ud558\uc5ec \uc6b0\uc120 \uc870\uce58.",
+        "section_desc_timing": "\uc694\uc77c/\uc2dc\uac04\ub300\ubcc4 \uc751\ub2f5\ub960 \ud788\ud2b8\ub9f5 (UTC). \uae30\ubcf8 \uc2a4\ucf00\uc904 \uc2dc\uac04 \ucd5c\uc801\ud654\uc5d0 \ud65c\uc6a9.",
+        "section_desc_latency": "\uc804\ud654 vs SMS \uc751\ub2f5 \uc18d\ub3c4 \ube44\uad50 \u2014 \ucc44\ub110 \ucd94\ucc9c\uc5d0 \ud65c\uc6a9.",
+        "section_desc_insights": "\ud604\uc7ac \ub370\uc774\ud130 \ud328\ud134 \uae30\ubc18 \uc790\ub3d9 \uc0dd\uc131 \uc2e4\ud589 \uad8c\uc7a5\uc0ac\ud56d.",
+
         # --- Acquisition ---
         "acquisition_title": "\uc0ac\uc6a9\uc790 \ud68d\ub4dd \ubc0f \uc131\uc7a5",
         "user_growth": "\uc0ac\uc6a9\uc790 \uc131\uc7a5",
@@ -498,12 +565,18 @@ def inject_custom_css() -> None:
         /* Body / caption */
         .stMarkdown p, .stCaption { font-size: 1.0rem !important; }
         /* Sidebar text sizes */
-        [data-testid="stSidebar"] label { font-size: 1.05rem !important; }
+        [data-testid="stSidebar"] label { font-size: 1.1rem !important; }
         [data-testid="stSidebar"] .stMarkdown h2 { font-size: 1.4rem !important; }
         [data-testid="stSidebar"] .stMarkdown h3 { font-size: 1.2rem !important; }
         [data-testid="stSidebar"] .stMarkdown p,
-        [data-testid="stSidebar"] .stCaption { font-size: 1.0rem !important; }
+        [data-testid="stSidebar"] .stCaption { font-size: 1.05rem !important; }
         [data-testid="stSidebar"] [data-baseweb="select"] span { font-size: 1.0rem !important; }
+        /* Sidebar page navigation (multi-page nav) */
+        [data-testid="stSidebarNav"] li a span { font-size: 1.15rem !important; }
+        [data-testid="stSidebarNav"] li a { font-size: 1.15rem !important; }
+        section[data-testid="stSidebar"] nav a span { font-size: 1.15rem !important; }
+        section[data-testid="stSidebar"] nav a { font-size: 1.15rem !important; }
+        [data-testid="stSidebarNavItems"] a span { font-size: 1.15rem !important; }
         </style>
         """,
         unsafe_allow_html=True,

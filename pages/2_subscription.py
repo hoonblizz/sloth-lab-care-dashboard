@@ -6,7 +6,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import streamlit as st
 import pandas as pd
-from lib.db import check_password
 from lib.queries import (
     get_tier_distribution,
     get_trial_conversion,
@@ -20,7 +19,6 @@ from lib.charts import pie_chart, bar_chart, line_chart, COLORS
 from lib.i18n import t, inject_custom_css
 from lib.filters import get_internal_user_ids
 
-check_password()
 inject_custom_css()
 
 st.title(t("subscription_title"))
@@ -53,6 +51,7 @@ col_left, col_right = st.columns(2)
 
 with col_left:
     st.subheader(t("tier_distribution"))
+    st.caption(t("section_desc_tier"))
     df_tier = get_tier_distribution(exclude_user_ids=exclude_ids)
     if not df_tier.empty:
         # Combine tier + plan_type for labeling
@@ -64,18 +63,19 @@ with col_left:
         df_agg = df_tier.groupby("label", as_index=False)["user_count"].sum()
         fig = pie_chart(df_agg, names="label", values="user_count",
                         title=t("chart_tier"))
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     else:
         st.info(t("no_tier_data"))
 
 with col_right:
     st.subheader(t("monthly_vs_annual"))
+    st.caption(t("section_desc_monthly_annual"))
     if not df_tier.empty:
         df_premium = df_tier[df_tier["tier"] == "premium"].copy()
         if not df_premium.empty:
             fig = pie_chart(df_premium, names="plan_type", values="user_count",
                             title=t("chart_plan_split"))
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
         else:
             st.info(t("no_premium_yet"))
     else:
@@ -87,6 +87,7 @@ with col_right:
 
 st.divider()
 st.subheader(t("trial_conversion_title"))
+st.caption(t("section_desc_trial_conversion"))
 
 df_conv = get_trial_conversion(exclude_user_ids=exclude_ids)
 
@@ -94,12 +95,12 @@ if not df_conv.empty:
     df_conv = df_conv.sort_values("cohort_week")
     fig = bar_chart(df_conv, x="cohort_week", y="conversion_rate",
                     title=t("chart_conversion_cohort"))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     with st.expander(t("cohort_details")):
         st.dataframe(
             df_conv[["cohort_week", "total_signups", "converted", "conversion_rate"]],
-            use_container_width=True,
+            width="stretch",
         )
         st.download_button(
             t("download_csv"), df_conv.to_csv(index=False),
@@ -115,10 +116,11 @@ else:
 st.divider()
 
 st.subheader(t("mrr_trend_title"), help=t("desc_mrr_trend"))
+st.caption(t("section_desc_mrr_trend"))
 df_mrr = get_mrr_trend(start, end, exclude_user_ids=exclude_ids)
 if not df_mrr.empty and df_mrr["mrr"].sum() > 0:
     fig = line_chart(df_mrr, x="month", y=["mrr"], title=t("chart_mrr_trend"))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 else:
     st.info(t("no_mrr_trend_data"))
 
@@ -131,21 +133,23 @@ col_events, col_churn = st.columns(2)
 
 with col_events:
     st.subheader(t("subscription_lifecycle_title"), help=t("desc_subscription_lifecycle"))
+    st.caption(t("section_desc_subscription_lifecycle"))
     df_lifecycle = get_subscription_lifecycle(exclude_user_ids=exclude_ids)
     if not df_lifecycle.empty:
         fig = bar_chart(df_lifecycle, x="event_type", y="event_count",
                         title=t("chart_subscription_lifecycle"))
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     else:
         st.info(t("no_lifecycle_data"))
 
 with col_churn:
     st.subheader(t("churn_reasons_title"), help=t("desc_churn_reasons"))
+    st.caption(t("section_desc_churn_reasons"))
     df_churn = get_churn_reasons(exclude_user_ids=exclude_ids)
     if not df_churn.empty:
         fig = pie_chart(df_churn, names="reason", values="event_count",
                         title=t("chart_churn_reasons"))
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     else:
         st.info(t("no_churn_data"))
 

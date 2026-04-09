@@ -6,7 +6,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import streamlit as st
 import pandas as pd
-from lib.db import check_password
 from lib.queries import (
     get_dau_wau_mau,
     get_dau_trend,
@@ -19,7 +18,6 @@ from lib.charts import line_chart, bar_chart, heatmap_table, COLORS
 from lib.i18n import t, inject_custom_css
 from lib.filters import filter_df_by_date, get_internal_user_ids
 
-check_password()
 inject_custom_css()
 
 st.title(t("engagement_title"))
@@ -33,6 +31,7 @@ exclude_ids = tuple(get_internal_user_ids()) if st.session_state.get("exclude_in
 # ---------------------------------------------------------------------------
 
 st.subheader(t("active_users"))
+st.caption(t("section_desc_active_users"))
 
 active = get_dau_wau_mau(exclude_user_ids=exclude_ids)
 if active:
@@ -49,12 +48,13 @@ else:
 
 st.divider()
 st.subheader(t("dau_trend"))
+st.caption(t("section_desc_dau_trend"))
 
 df_dau = get_dau_trend(start, end, exclude_user_ids=exclude_ids)
 df_dau = filter_df_by_date(df_dau, "day")
 if not df_dau.empty:
     fig = line_chart(df_dau, x="day", y="active_users", title=t("chart_dau"))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 else:
     st.info(t("no_dau_data"))
 
@@ -64,6 +64,7 @@ else:
 
 st.divider()
 st.subheader(t("cohort_retention"))
+st.caption(t("section_desc_cohort_retention"))
 
 df_ret = get_retention_cohort(exclude_user_ids=exclude_ids)
 if not df_ret.empty:
@@ -71,10 +72,10 @@ if not df_ret.empty:
     display_df = df_ret.copy()
     display_df.columns = [t("cohort_week"), t("size"), "D1 %", "D7 %", "D14 %", "D30 %"]
     fig = heatmap_table(display_df, title=t("chart_retention"))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     with st.expander(t("raw_data")):
-        st.dataframe(display_df, use_container_width=True)
+        st.dataframe(display_df, width="stretch")
         st.download_button(
             t("download_csv"), display_df.to_csv(index=False),
             "retention_cohort.csv", "text/csv",
@@ -88,6 +89,7 @@ else:
 
 st.divider()
 st.subheader(t("feature_adoption"))
+st.caption(t("section_desc_feature_adoption"))
 
 df_feat = get_feature_adoption(exclude_user_ids=exclude_ids)
 if not df_feat.empty:
@@ -95,7 +97,7 @@ if not df_feat.empty:
         df_feat, x="feature", y="adoption_rate",
         title=t("chart_feature_adoption"),
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 else:
     st.info(t("no_feature_data"))
 
@@ -105,12 +107,13 @@ else:
 
 st.divider()
 st.subheader(t("weekly_response_rate"))
+st.caption(t("section_desc_weekly_response"))
 
 df_resp = get_weekly_response_rate(start, end, exclude_user_ids=exclude_ids)
 df_resp = filter_df_by_date(df_resp, "week_start")
 if not df_resp.empty:
     fig = line_chart(df_resp, x="week_start", y="response_rate",
                      title=t("chart_weekly_response"))
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 else:
     st.info(t("no_response_data"))
