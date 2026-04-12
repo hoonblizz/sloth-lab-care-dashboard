@@ -15,6 +15,7 @@ from lib.messaging import (  # noqa: E402
     SUPPORTED_LANGUAGES,
     get_template,
     list_template_slugs,
+    render_preview_html,
 )
 from lib.rendering import render_email_preview  # noqa: E402
 from lib.supabase_client import (  # noqa: E402
@@ -92,17 +93,43 @@ def main() -> None:
         help="본인 이메일을 입력하세요. 실제 발송됩니다.",
     )
 
+    # Determine render path: body_html (new upload path) vs body_markdown (legacy)
+    has_html = bool(tpl.get("body_html") and tpl["body_html"].strip())
+    has_markdown = bool(tpl.get("body_markdown") and tpl["body_markdown"].strip())
+
+    if not has_html and not has_markdown:
+        st.warning("이 템플릿에 본문이 없습니다. Messaging 페이지에서 HTML을 먼저 업로드하세요.")
+        return
+
+    def _render() -> dict[str, str]:
+        """Render the template using whichever body is available."""
+        import re
+
+        if has_html:
+            # HTML upload path — substitute variables directly, no base layout wrap
+            subject_sub = tpl["subject"]
+            for k, v in variables.items():
+                subject_sub = re.sub(
+                    r"\{\{\s*" + re.escape(k) + r"\s*\}\}", v, subject_sub
+                )
+            html = render_preview_html(tpl["body_html"], variables)
+            # Simple plaintext fallback
+            text = re.sub(r"<[^>]+>", "", html).strip()
+            return {"subject": subject_sub, "html": html, "text": text}
+        else:
+            return render_email_preview(
+                subject=tpl["subject"],
+                body_markdown=tpl["body_markdown"],
+                variables=variables,
+                language=language,
+            )
+
     if st.button("테스트 발송", type="primary"):
         if not to_email or "@" not in to_email:
             st.error("유효한 이메일을 입력하세요.")
             return
 
-        rendered = render_email_preview(
-            subject=tpl["subject"],
-            body_markdown=tpl["body_markdown"],
-            variables=variables,
-            language=language,
-        )
+        rendered = _render()
 
         with st.spinner("send-email Edge Function 호출 중..."):
             result = _call_send_email(
@@ -111,7 +138,7 @@ def main() -> None:
                 subject=rendered["subject"],
                 html=rendered["html"],
                 text=rendered["text"],
-                tags=[f"test-send", slug, language],
+                tags=["test-send", slug, language],
             )
 
         if result.get("ok"):
@@ -125,12 +152,7 @@ def main() -> None:
     with st.expander("현재 렌더링 결과 미리보기"):
         import streamlit.components.v1 as components
 
-        rendered = render_email_preview(
-            subject=tpl["subject"],
-            body_markdown=tpl["body_markdown"],
-            variables=variables,
-            language=language,
-        )
+        rendered = _render()
         st.markdown(f"**Subject:** {rendered['subject']}")
         components.html(rendered["html"], height=600, scrolling=True)
 
