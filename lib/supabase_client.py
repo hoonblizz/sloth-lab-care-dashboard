@@ -70,6 +70,41 @@ def get_supabase(env: str) -> Client:
     return create_client(cfg["url"], cfg["key"])
 
 
+def _inject_admin_css() -> None:
+    """Set a 16px (1rem) minimum font size for all admin pages + sidebar."""
+    st.markdown(
+        """
+        <style>
+        /* ── Global minimum 16px for admin pages ── */
+        .stMarkdown p, .stMarkdown li, .stCaption,
+        label, .stTextInput label, .stSelectbox label,
+        .stFileUploader label, .stRadio label,
+        [data-testid="stWidgetLabel"],
+        [data-baseweb="select"] span,
+        .stTabs [data-baseweb="tab"] button,
+        td, th
+        { font-size: 1rem !important; }
+
+        /* ── Sidebar — nav links, labels, captions ── */
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] .stMarkdown p,
+        [data-testid="stSidebar"] .stCaption,
+        [data-testid="stSidebar"] [data-baseweb="select"] span,
+        section[data-testid="stSidebar"] nav a span,
+        [data-testid="stSidebarNav"] li a span,
+        [data-testid="stSidebarNavItems"] a span
+        { font-size: 1rem !important; }
+
+        /* ── Headings — proportionally larger ── */
+        .stMarkdown h2 { font-size: 1.5rem !important; }
+        .stMarkdown h3 { font-size: 1.25rem !important; }
+        [data-testid="stSidebar"] .stMarkdown h2 { font-size: 1.35rem !important; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def render_env_sidebar() -> str:
     """Render the shared sidebar selector and return the chosen env name.
 
@@ -77,6 +112,7 @@ def render_env_sidebar() -> str:
     Streamlit UI code. The selection is persisted in ``st.session_state``
     across navigation so that moving between pages doesn't reset to QA.
     """
+    _inject_admin_css()
     current = st.session_state.get("env", "QA")
     with st.sidebar:
         st.header("Environment")
