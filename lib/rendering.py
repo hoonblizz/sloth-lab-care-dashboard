@@ -40,13 +40,13 @@ EMAIL_BASE_LAYOUT = """<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{SUBJECT}</title>
 <style>
-  body { margin:0; padding:0; background-color:#FAF6F1; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-  a { color:#E57A5F; text-decoration:underline; }
-  @media screen and (max-width: 600px) {
-    .container { width: 100% !important; }
-    .px { padding-left: 24px !important; padding-right: 24px !important; }
-    h1 { font-size: 26px !important; line-height: 32px !important; }
-  }
+  body {{ margin:0; padding:0; background-color:#FAF6F1; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }}
+  a {{ color:#E57A5F; text-decoration:underline; }}
+  @media screen and (max-width: 600px) {{
+    .container {{ width: 100% !important; }}
+    .px {{ padding-left: 24px !important; padding-right: 24px !important; }}
+    h1 {{ font-size: 26px !important; line-height: 32px !important; }}
+  }}
 </style>
 </head>
 <body style="margin:0; padding:0; background-color:#FAF6F1;">
