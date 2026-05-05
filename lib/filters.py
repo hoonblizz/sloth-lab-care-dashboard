@@ -1,4 +1,9 @@
-"""Data filters — internal account exclusion & pre-launch date filtering."""
+"""Data filters — internal account exclusion & pre-launch date filtering.
+
+Excluded accounts are stored in `public.analytics_excluded_users` (DB-managed
+via the Settings page). The list is cached for 5 minutes; mutating helpers
+clear the cache so changes propagate immediately within the same session.
+"""
 
 from __future__ import annotations
 
@@ -12,13 +17,6 @@ from lib.i18n import t
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
-
-INTERNAL_EMAILS = [
-    "hoongoon86@gmail.com",
-    "hoonblizz@gmail.com",
-    "kay.ij1126@gmail.com",
-    "slothlab.review@gmail.com",
-]
 
 LAUNCH_DATE = date(2026, 4, 1)
 
@@ -46,23 +44,22 @@ def sidebar_filters() -> None:
 # ---------------------------------------------------------------------------
 
 def filter_df_by_email(df: pd.DataFrame, email_col: str = "email") -> pd.DataFrame:
-    """Remove rows matching internal emails (if filter is active)."""
+    """Remove rows matching excluded emails (if filter is active)."""
     if not st.session_state.get("exclude_internal", True):
         return df
     if email_col not in df.columns or df.empty:
         return df
-    return df[~df[email_col].isin(INTERNAL_EMAILS)].reset_index(drop=True)
+    excluded = set(get_excluded_emails())
+    if not excluded:
+        return df
+    return df[~df[email_col].isin(excluded)].reset_index(drop=True)
 
 
 def filter_df_by_user_id(
     df: pd.DataFrame,
     user_id_col: str = "user_id",
 ) -> pd.DataFrame:
-    """Remove rows whose user_id belongs to an internal account.
-
-    Requires a Supabase lookup (cached) to map emails → user IDs.
-    Falls back to no-op if the lookup fails.
-    """
+    """Remove rows whose user_id belongs to an excluded account."""
     if not st.session_state.get("exclude_internal", True):
         return df
     if user_id_col not in df.columns or df.empty:
@@ -83,7 +80,6 @@ def filter_df_by_date(
         return df
     if date_col not in df.columns or df.empty:
         return df
-    # Ensure comparable types
     series = pd.to_datetime(df[date_col]).dt.date
     return df[series >= LAUNCH_DATE].reset_index(drop=True)
 
@@ -106,12 +102,47 @@ def aggregated_data_note() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Internal helpers
+# Excluded-user lookups (DB-backed)
 # ---------------------------------------------------------------------------
+
+@st.cache_data(ttl=300)
+def get_excluded_records() -> list[dict]:
+    """Return all rows from `analytics_excluded_users` (cached 5 min).
+
+    On failure, surfaces a sidebar warning so the user knows the exclusion
+    list could not be loaded — preventing silent inclusion of internal
+    accounts in metrics.
+    """
+    try:
+        from lib.db import get_client
+
+        sb = get_client()
+        result = (
+            sb.table("analytics_excluded_users")
+            .select("id, email, reason, added_by, added_at")
+            .order("added_at", desc=False)
+            .execute()
+        )
+        return result.data or []
+    except Exception as e:
+        st.sidebar.warning(
+            f"⚠️ Could not load exclusion list: {e}. "
+            "Internal accounts may be included in metrics."
+        )
+        return []
+
+
+def get_excluded_emails() -> list[str]:
+    """Convenience wrapper returning just the email column."""
+    return [r["email"] for r in get_excluded_records()]
+
 
 @st.cache_data(ttl=1800)
 def get_internal_user_ids() -> list[str]:
-    """Look up user IDs for internal email addresses."""
+    """Look up user IDs whose email is in the excluded list."""
+    emails = get_excluded_emails()
+    if not emails:
+        return []
     try:
         from lib.db import get_client
 
@@ -119,9 +150,79 @@ def get_internal_user_ids() -> list[str]:
         result = (
             sb.table("profiles")
             .select("id")
-            .in_("email", INTERNAL_EMAILS)
+            .in_("email", emails)
             .execute()
         )
         return [r["id"] for r in (result.data or [])]
-    except Exception:
+    except Exception as e:
+        st.sidebar.warning(
+            f"⚠️ Could not resolve excluded user IDs: {e}. "
+            "Internal accounts may be included in metrics."
+        )
         return []
+
+
+# ---------------------------------------------------------------------------
+# Mutations (Settings page)
+# ---------------------------------------------------------------------------
+
+def add_excluded_email(email: str, reason: str | None = None,
+                       added_by: str = "dashboard") -> tuple[bool, str]:
+    """Insert a new excluded email. Returns (ok, message_key)."""
+    email_norm = (email or "").strip().lower()
+    if not _is_valid_email(email_norm):
+        return False, "email_invalid"
+
+    try:
+        from lib.db import get_client
+
+        sb = get_client()
+        sb.table("analytics_excluded_users").insert({
+            "email": email_norm,
+            "reason": (reason or "").strip() or None,
+            "added_by": added_by,
+        }).execute()
+    except Exception as e:
+        if "duplicate key" in str(e).lower() or "unique" in str(e).lower():
+            return False, "email_duplicate"
+        return False, str(e)
+
+    _invalidate_cache()
+    return True, "add_success"
+
+
+def remove_excluded_email(email: str) -> tuple[bool, str]:
+    """Delete an excluded email row. Returns (ok, message_key)."""
+    email_norm = (email or "").strip().lower()
+    if not email_norm:
+        return False, "email_invalid"
+
+    try:
+        from lib.db import get_client
+
+        sb = get_client()
+        sb.table("analytics_excluded_users").delete().eq("email", email_norm).execute()
+    except Exception as e:
+        return False, str(e)
+
+    _invalidate_cache()
+    return True, "remove_success"
+
+
+def _invalidate_cache() -> None:
+    """Clear caches that depend on the excluded list."""
+    get_excluded_records.clear()
+    get_internal_user_ids.clear()
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+import re
+
+_EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+
+
+def _is_valid_email(value: str) -> bool:
+    return bool(_EMAIL_RE.match(value))

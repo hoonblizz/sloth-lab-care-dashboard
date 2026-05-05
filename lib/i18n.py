@@ -212,6 +212,14 @@ TRANSLATIONS = {
         "no_recipients_yet": "No users with recipients yet.",
         "no_checkups_yet": "No users with check-ups yet.",
         "no_action_data": "No user action data.",
+        # Onboarding waterfall
+        "funnel_tab_lifecycle": "Lifecycle",
+        "funnel_tab_onboarding": "Onboarding",
+        "onboarding_funnel_title": "Onboarding Waterfall",
+        "chart_onboarding_funnel": "Welcome \u2192 Trial Activation",
+        "section_desc_onboarding_funnel": "User journey from app open to trial activation. Identify the largest drop-off step to prioritize UX fixes.",
+        "no_onboarding_data": "No onboarding events in selected range. Verify analytics_events ingestion.",
+        "step": "Step",
 
         # --- Marketing ---
         "marketing_title": "Marketing Insights",
@@ -267,6 +275,28 @@ TRANSLATIONS = {
         "insight_market": "\U0001f30d **Market**: **{pct}%** of recipients in {country}. {count} markets active.",
         "insight_dormant": "\U0001f4a4 **Dormant Users**: **{pct}%** of users ({count}) had 0 check-ups in 30 days. Re-activation campaign target.",
         "no_insights": "Insights will appear automatically as data accumulates.",
+
+        # --- Settings (excluded accounts management) ---
+        "settings_title": "Settings",
+        "settings_subtitle": "Manage analytics filters and exclusion lists.",
+        "settings_excluded_section": "Excluded Accounts",
+        "settings_excluded_caption": "These accounts are excluded from all analytics when 'Exclude internal accounts' is on.",
+        "settings_add_section": "Add Excluded Account",
+        "settings_cache_section": "Cache Control",
+        "settings_cache_caption": "Clear cached data so the next page load fetches fresh values from the database.",
+        "email_label": "Email",
+        "reason_label": "Reason",
+        "added_by_label": "Added By",
+        "added_at_label": "Added At",
+        "add_button": "Add",
+        "remove_button": "Remove",
+        "refresh_button": "Refresh data",
+        "email_invalid": "Please enter a valid email address.",
+        "email_duplicate": "This email is already in the exclusion list.",
+        "add_success": "Email added to the exclusion list.",
+        "remove_success": "Email removed from the exclusion list.",
+        "cache_cleared": "Cache cleared. Reload other pages to see fresh data.",
+        "no_excluded_accounts": "No accounts in the exclusion list yet.",
     },
     "ko": {
         # --- Common ---
@@ -466,6 +496,14 @@ TRANSLATIONS = {
         "no_recipients_yet": "\uc218\uc2e0\uc790\ub97c \ub4f1\ub85d\ud55c \uc0ac\uc6a9\uc790\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.",
         "no_checkups_yet": "\uccb4\ud06c\uc5c5\uc744 \ub4f1\ub85d\ud55c \uc0ac\uc6a9\uc790\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.",
         "no_action_data": "\uc0ac\uc6a9\uc790 \ud589\ub3d9 \ub370\uc774\ud130\uac00 \uc5c6\uc2b5\ub2c8\ub2e4.",
+        # Onboarding waterfall
+        "funnel_tab_lifecycle": "\ub77c\uc774\ud504\uc0ac\uc774\ud074",
+        "funnel_tab_onboarding": "\uc628\ubcf4\ub529",
+        "onboarding_funnel_title": "\uc628\ubcf4\ub529 \uc6cc\ud130\ud3f4",
+        "chart_onboarding_funnel": "Welcome \u2192 \ud2b8\ub77c\uc774\uc5bc \ud65c\uc131\ud654",
+        "section_desc_onboarding_funnel": "\uc571 \uc9c4\uc785\ubd80\ud130 \ud2b8\ub77c\uc774\uc5bc \ud65c\uc131\ud654\uae4c\uc9c0\uc758 \uc0ac\uc6a9\uc790 \uc5ec\uc815. \uac00\uc7a5 \ud070 \uc774\ud0c8 \uc9c0\uc810\uc744 \ud30c\uc545\ud574 UX \uac1c\uc120 \uc6b0\uc120\uc21c\uc704\ub97c \uc815\ud569\ub2c8\ub2e4.",
+        "no_onboarding_data": "\uc120\ud0dd\ud55c \uae30\uac04\uc5d0 \uc628\ubcf4\ub529 \uc774\ubca4\ud2b8\uac00 \uc5c6\uc2b5\ub2c8\ub2e4. analytics_events \uc218\uc9d1 \uc0c1\ud0dc\ub97c \ud655\uc778\ud558\uc138\uc694.",
+        "step": "\ub2e8\uacc4",
 
         # --- Marketing ---
         "marketing_title": "\ub9c8\ucf00\ud305 \uc778\uc0ac\uc774\ud2b8",
@@ -521,6 +559,28 @@ TRANSLATIONS = {
         "insight_market": "\U0001f30d **\uc2dc\uc7a5**: \uc218\uc2e0\uc790\uc758 **{pct}%**\uac00 {country}\uc5d0 \uc9d1\uc911. \ucd1d {count}\uac1c \uc2dc\uc7a5 \ud65c\uc131.",
         "insight_dormant": "\U0001f4a4 **\ube44\ud65c\uc131 \uc0ac\uc6a9\uc790**: \uc804\uccb4 \uc720\uc800\uc758 **{pct}%** ({count}\uba85)\uac00 30\uc77c\uac04 \uccb4\ud06c\uc5c5 0\uac74. \uc7ac\ud65c\uc131\ud654 \uce94\ud398\uc778 \ub300\uc0c1.",
         "no_insights": "\ub370\uc774\ud130\uac00 \ub204\uc801\ub418\uba74 \uc790\ub3d9\uc73c\ub85c \uc778\uc0ac\uc774\ud2b8\uac00 \uc0dd\uc131\ub429\ub2c8\ub2e4.",
+
+        # --- Settings (excluded accounts management) ---
+        "settings_title": "\uc124\uc815",
+        "settings_subtitle": "\ubd84\uc11d \ud544\ud130\uc640 \uc81c\uc678 \ubaa9\ub85d\uc744 \uad00\ub9ac\ud569\ub2c8\ub2e4.",
+        "settings_excluded_section": "\uc81c\uc678\ub41c \uacc4\uc815",
+        "settings_excluded_caption": "'\ub0b4\ubd80 \uacc4\uc815 \uc81c\uc678' \uc635\uc158\uc774 \ucf1c\uc9c4 \ub54c \ubaa8\ub4e0 \ubd84\uc11d\uc5d0\uc11c \uc81c\uc678\ub429\ub2c8\ub2e4.",
+        "settings_add_section": "\uc81c\uc678 \uacc4\uc815 \ucd94\uac00",
+        "settings_cache_section": "\ucea0\uc2dc \uad00\ub9ac",
+        "settings_cache_caption": "\ucea0\uc2dc\ub97c \ube44\uc6cc \ub2e4\uc74c \ud398\uc774\uc9c0 \ub85c\ub4dc \uc2dc DB\uc5d0\uc11c \ucd5c\uc2e0 \uac12\uc744 \uac00\uc838\uc635\ub2c8\ub2e4.",
+        "email_label": "\uc774\uba54\uc77c",
+        "reason_label": "\uc0ac\uc720",
+        "added_by_label": "\ucd94\uac00\ud55c \uc0ac\ub78c",
+        "added_at_label": "\ucd94\uac00\uc77c",
+        "add_button": "\ucd94\uac00",
+        "remove_button": "\uc0ad\uc81c",
+        "refresh_button": "\ub370\uc774\ud130 \uc0c8\ub85c\uace0\uce68",
+        "email_invalid": "\uc62c\ubc14\ub978 \uc774\uba54\uc77c \uc8fc\uc18c\ub97c \uc785\ub825\ud574\uc8fc\uc138\uc694.",
+        "email_duplicate": "\uc774\ubbf8 \uc81c\uc678 \ubaa9\ub85d\uc5d0 \uc788\ub294 \uc774\uba54\uc77c\uc785\ub2c8\ub2e4.",
+        "add_success": "\uc81c\uc678 \ubaa9\ub85d\uc5d0 \ucd94\uac00\ub418\uc5c8\uc2b5\ub2c8\ub2e4.",
+        "remove_success": "\uc81c\uc678 \ubaa9\ub85d\uc5d0\uc11c \uc0ad\uc81c\ub418\uc5c8\uc2b5\ub2c8\ub2e4.",
+        "cache_cleared": "\ucea0\uc2dc\uac00 \ucd08\uae30\ud654\ub418\uc5c8\uc2b5\ub2c8\ub2e4. \ub2e4\ub978 \ud398\uc774\uc9c0\ub97c \uc0c8\ub85c\uace0\uce68\ud558\uba74 \ucd5c\uc2e0 \ub370\uc774\ud130\uac00 \ud45c\uc2dc\ub429\ub2c8\ub2e4.",
+        "no_excluded_accounts": "\uc81c\uc678 \ubaa9\ub85d\uc5d0 \ub4f1\ub85d\ub41c \uacc4\uc815\uc774 \uc5c6\uc2b5\ub2c8\ub2e4.",
     },
 }
 
